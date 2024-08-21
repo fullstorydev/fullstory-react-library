@@ -1,5 +1,5 @@
 {
-    "name": "sample-component-library",
+    "name": "@bateman001/base-react-component-library",
     "version": "1.0.0",
     "description": "this is an example of how to build a component library",
     "main": "dist/cjs/index.js",
@@ -23,5 +23,8 @@
         "dist"
     ],
     "types": "dist/index.d.ts",
-    "type": "module"
+    "type": "module",
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/bateman001"
+    }
 }
