@@ -31,16 +31,30 @@ export function getPageName(path: string, meta: boolean = false): string {
     }
 }
 
-export function getVariables(search: any, meta: boolean = false): any {
+export function getProperties(search: string, meta: boolean = false): any {
     if (meta) {
         return getMetaData();
+    } else if (!!search) {
+        // Remove the leading '?' from the query string
+        const query = search[0] === "?" ? search.substring(1) : search;
+
+        // Split the query string into parts using '&' as the separator
+        const parts = query.split("&");
+
+        // Reduce the array of strings into an object with key-value pairs
+        const params = parts.reduce((accumulator: any, current: any) => {
+            // Split each part into key and value
+            const [key, value] = current.split("=");
+
+            // Assign the key-value pair to the accumulator object, decoding the value
+            accumulator[key] = decodeURIComponent(value);
+
+            return accumulator;
+        }, {});
+
+        return params;
     } else {
-        console.log("search", search);
-        // const regex = /\/:[^\/]+/g; // The 'g' flag is used to replace all occurrences in the string
-        // const noId = path.replace(regex, "");
-        // const arr = noId.split("/");
-        // const name = arr.join(" ");
-        // return name;
+        return {};
     }
 }
 

@@ -3,53 +3,36 @@ import { render, screen } from "@testing-library/react";
 import { Routes, Route } from "react-router-dom";
 import { MemoryRouter } from "react-router"; // MemoryRouter is useful for testing
 import FullStoryProvider from "./FullStoryProvider";
-import { fullstory } from "../../utils/fullstory";
+import * as FS from "../../utils/fullstory";
 import * as Helpers from "../../utils/helpers";
+import { FullStory, init } from "@fullstory/browser";
 
-// jest.mock("../../utils/fullstory", () => ({
-//     setPage: jest.fn()
-// }));
-
-// jest.mock("../../utils/helpers", () => ({
-//     getPageName: jest.fn()
-//     // ...jest.requireActual("../../utils/helpers"), // This will preserve other exported functions
-//     // getPageName: jest.fn((path: string, meta: boolean = false): string => {
-//     //     // you can return a fixed name, or use the 'path' and 'meta' to create a mock name
-//     //     if (meta) {
-//     //         return "MockMetaData";
-//     //     } else {
-//     //         // Remove leading and trailing slashes
-//     //         const trimmedUrl = path.replace(/^\/|\/$/g, "");
-//     //         // Split the path into segments
-//     //         const segments = trimmedUrl.split("/");
-//     //         // Process segments to capitalize and exclude dynamic parts
-//     //         const pageNameParts = segments
-//     //             .map(segment => {
-//     //                 // Exclude dynamic segments starting with ':'
-//     //                 if (segment.startsWith(":")) {
-//     //                     return "";
-//     //                 }
-//     //                 // Exclude the word "page" from segments unless it's inherent in the path
-//     //                 if (segment.toLowerCase() === "page") {
-//     //                     return "";
-//     //                 }
-//     //                 // Capitalize the first letter of each segment
-//     //                 return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
-//     //             })
-//     //             .filter(part => part !== ""); // Remove any empty strings resulting from the mapping
-//     //         // Join the processed segments with a space
-//     //         const pageName = pageNameParts.join(" ");
-//     //         return pageName;
-//     //     }
-//     // })
-// }));
+jest.mock("@fullstory/browser", () => ({
+    FullStory: jest.fn((apiName, options) => {
+        // Here you can add a condition to handle different FullStory API names if necessary
+        if (apiName === "setProperties") {
+            return;
+            // You could add additional logic to save the data or validate the options
+            // For now, we'll just check that it's been called correctly.
+        }
+    }),
+    init: jest.fn(org_id => {
+        console.log("org_id", org_id);
+    })
+}));
 
 describe("FullStoryProvider", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
+    const getPropertiesSpy = jest.spyOn(Helpers, "getProperties");
+    const setPropertiesSpy = jest.spyOn(FS, "setPage");
 
-    it("renders with FSProvider", async () => {
+    beforeAll(() => {
+        init({ orgId: "123" });
+    });
+
+    it("renders with FSProvider", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider>
@@ -64,7 +47,7 @@ describe("FullStoryProvider", () => {
         expect(screen.getByText("Test Component"));
     });
 
-    it("getPageName returns correct path name", async () => {
+    it("getPageName returns correct path name", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider>
@@ -79,7 +62,7 @@ describe("FullStoryProvider", () => {
         expect(getNameSpy).toHaveLastReturnedWith("Test-path");
     });
 
-    it("getPageName returns correct path name for multi path", async () => {
+    it("getPageName returns correct path name for multi path", () => {
         render(
             <MemoryRouter initialEntries={["/test-path/menu"]}>
                 <FullStoryProvider>
@@ -94,7 +77,7 @@ describe("FullStoryProvider", () => {
         expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
     });
 
-    it("getPageName returns correct path name with :id attached", async () => {
+    it("getPageName returns correct path name with :id attached", () => {
         render(
             <MemoryRouter initialEntries={["/test-path/menu/:id"]}>
                 <FullStoryProvider>
@@ -107,5 +90,79 @@ describe("FullStoryProvider", () => {
 
         expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu/:id");
         expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
+    });
+
+    it("getProperties is returns properties from search", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path?property_1=1&property_2=2"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getPropertiesSpy).toHaveBeenCalledWith("?property_1=1&property_2=2");
+        expect(getPropertiesSpy).toHaveLastReturnedWith({ property_1: "1", property_2: "2" });
+    });
+
+    it("getProperties is returns object when search is empty", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getPropertiesSpy).toHaveBeenCalledWith("");
+        expect(getPropertiesSpy).toHaveLastReturnedWith({});
+    });
+
+    it("setProperties sets with no search items", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(setPropertiesSpy).toHaveBeenCalledWith("Test-path", {});
+
+        expect(FullStory).toHaveBeenCalledWith("setProperties", {
+            type: "page",
+            properties: {
+                pageName: "Test-path"
+            }
+        });
+    });
+
+    it("setProperties sets with no search items", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path?property_1=1&property_2=2"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(setPropertiesSpy).toHaveBeenCalledWith("Test-path", {});
+
+        expect(FullStory).toHaveBeenCalledWith("setProperties", {
+            type: "page",
+            properties: {
+                pageName: "Test-path",
+                property_1: "1",
+                property_2: "2"
+            }
+        });
     });
 });
