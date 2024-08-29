@@ -1,3 +1,7 @@
+function isNumber(value: any): boolean {
+    return !isNaN(value);
+}
+
 export function getPageName(path: string, meta: boolean = false): string {
     if (meta) {
         return getMetaData();
@@ -46,8 +50,17 @@ export function getProperties(search: string, meta: boolean = false): any {
             // Split each part into key and value
             const [key, value] = current.split("=");
 
+            // Find values data type
+            let val: string | number = decodeURIComponent(value);
+            switch (true) {
+                case isNumber(val):
+                    val = parseInt(val);
+                default:
+                    val = val;
+            }
+
             // Assign the key-value pair to the accumulator object, decoding the value
-            accumulator[key] = decodeURIComponent(value);
+            accumulator[key] = val;
 
             return accumulator;
         }, {});
