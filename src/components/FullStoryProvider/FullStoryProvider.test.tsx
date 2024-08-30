@@ -25,7 +25,7 @@ describe("FullStoryProvider", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
-    const getPropertiesSpy = jest.spyOn(Helpers, "getProperties");
+    const getPropertiesSpy = jest.spyOn(Helpers, "getSearchProperties");
     const setPropertiesSpy = jest.spyOn(FS, "setPage");
 
     beforeAll(() => {
@@ -47,6 +47,7 @@ describe("FullStoryProvider", () => {
         expect(screen.getByText("Test Component"));
     });
 
+    // GET PAGE NAME
     it("getPageName returns correct path name", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
@@ -92,9 +93,10 @@ describe("FullStoryProvider", () => {
         expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
     });
 
-    it("getProperties is returns properties from search", () => {
+    // GET SEARCH PROPS
+    it("getSearchProperties returns properties from search", () => {
         render(
-            <MemoryRouter initialEntries={["/test-path?property_1=1&property_2=property"]}>
+            <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
                 <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -103,11 +105,11 @@ describe("FullStoryProvider", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("?property_1=1&property_2=property");
+        expect(getPropertiesSpy).toHaveBeenCalledWith("?property-1=1&property-2=property");
         expect(getPropertiesSpy).toHaveLastReturnedWith({ property_1: 1, property_2: "property" });
     });
 
-    it("getProperties is returns object when search is empty", () => {
+    it("getSearchProperties returns object when search is empty", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider>
@@ -122,6 +124,37 @@ describe("FullStoryProvider", () => {
         expect(getPropertiesSpy).toHaveLastReturnedWith({});
     });
 
+    it("getSearchProperties gets property with name", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path?name=John%20Doe&property-2=property"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getPropertiesSpy).toHaveBeenCalledWith("?name=John%20Doe&property-2=property");
+        expect(getPropertiesSpy).toHaveLastReturnedWith({ name: "John Doe", property_2: "property" });
+    });
+
+    it("getSearchProperties gets property with multiple - ", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path?user-property-1=property"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getPropertiesSpy).toHaveBeenCalledWith("?user-property-1=property");
+        expect(getPropertiesSpy).toHaveLastReturnedWith({ user_property_1: "property" });
+    });
+
+    // SET SEARCH PROPS
     it("setProperties sets with no search items", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
@@ -145,7 +178,7 @@ describe("FullStoryProvider", () => {
 
     it("setProperties sets with search items", () => {
         render(
-            <MemoryRouter initialEntries={["/test-path?property_1=1&property_2=property"]}>
+            <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
                 <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />

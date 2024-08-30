@@ -35,7 +35,7 @@ export function getPageName(path: string, meta: boolean = false): string {
     }
 }
 
-export function getProperties(search: string, meta: boolean = false): any {
+export function getSearchProperties(search: string, meta: boolean = false): any {
     if (meta) {
         return getMetaData();
     } else if (!!search) {
@@ -51,16 +51,19 @@ export function getProperties(search: string, meta: boolean = false): any {
             const [key, value] = current.split("=");
 
             // Find values data type
-            let val: string | number = decodeURIComponent(value);
+            let v: string | number = decodeURIComponent(value);
             switch (true) {
-                case isNumber(val):
-                    val = parseInt(val);
+                case isNumber(v):
+                    v = parseInt(v);
                 default:
-                    val = val;
+                    v = v;
             }
 
+            // Change - to _ in key
+            let k = key.replaceAll("-", "_");
+
             // Assign the key-value pair to the accumulator object, decoding the value
-            accumulator[key] = val;
+            accumulator[k] = v;
 
             return accumulator;
         }, {});

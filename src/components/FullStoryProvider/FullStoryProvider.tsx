@@ -1,8 +1,8 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { ReactNode, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
-import { getPageName, getProperties } from "../../utils/helpers";
+import { getPageName, getSearchProperties } from "../../utils/helpers";
 
 // Prop types for FullStoryProvider
 interface FullStoryProviderProps {
@@ -24,8 +24,8 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children }
     useEffect(() => {
         try {
             const name = getPageName(location.pathname);
-            const properties = getProperties(location.search);
-            setPage(name, properties);
+            const searchProperties = getSearchProperties(location.search);
+            setPage(name, searchProperties);
         } catch (error) {
             console.log("error", error);
         }
