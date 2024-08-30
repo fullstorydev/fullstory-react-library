@@ -7,10 +7,11 @@ import { getPageName, getSearchProperties } from "../../utils/helpers";
 // Prop types for FullStoryProvider
 interface FullStoryProviderProps {
     children: ReactNode;
+    meta?: boolean;
 }
 
 // Provider component
-export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children }) => {
+export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, meta = false }) => {
     const location = useLocation();
 
     const useFSNavigate = (to: string, pageName?: string, properties?: any) => {
@@ -23,9 +24,10 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children }
 
     useEffect(() => {
         try {
-            const name = getPageName(location.pathname);
-            const searchProperties = getSearchProperties(location.search);
-            setPage(name, searchProperties);
+            const name = getPageName(location.pathname, meta);
+            const properties = getSearchProperties(location.search, meta);
+
+            setPage(name, properties);
         } catch (error) {
             console.log("error", error);
         }

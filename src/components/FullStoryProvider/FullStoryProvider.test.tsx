@@ -21,7 +21,7 @@ jest.mock("@fullstory/browser", () => ({
     })
 }));
 
-describe("FullStoryProvider", () => {
+describe("FullStoryProvider: Auto Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
@@ -195,6 +195,94 @@ describe("FullStoryProvider", () => {
                 pageName: "Test-path",
                 property_1: 1,
                 property_2: "property"
+            }
+        });
+    });
+});
+
+describe.only("FullStoryProvider: Meta Configure", () => {
+    beforeAll(() => {
+        init({ orgId: "123" });
+
+        document.head.innerHTML = `
+        <title>Test Component</title>
+        <meta name="description" content="Test Description">
+        <meta name="keywords" content="jest,testing">
+        <meta property="og:title" content="Test Title">
+      `;
+    });
+
+    const TestComponent = () => <div>Test Component</div>;
+    const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
+    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+
+    it("renders with FSProvider with meta tag", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider meta>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(screen.getByText("Test Component"));
+    });
+
+    it("calls functions with meta tag called", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider meta>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
+        expect(getSearchProperties).toHaveBeenCalledWith("", true);
+    });
+
+    it("is able to extract meta properties from head", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider meta>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getPageNameSpy).toHaveReturnedWith("Test Component");
+        expect(getSearchProperties).toHaveReturnedWith({
+            description: "Test Description",
+            keywords: "jest,testing",
+            "og:title": "Test Title"
+        });
+    });
+
+    it("is able to set meta properties in FS", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider meta>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(FullStory).toHaveBeenCalledWith("setProperties", {
+            type: "page",
+            properties: {
+                pageName: "Test Component",
+                description: "Test Description",
+                keywords: "jest,testing",
+                "og:title": "Test Title"
             }
         });
     });
