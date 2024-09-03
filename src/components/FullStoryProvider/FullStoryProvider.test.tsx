@@ -59,7 +59,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path");
+        expect(getNameSpy).toHaveBeenCalledWith("/test-path", false);
         expect(getNameSpy).toHaveLastReturnedWith("Test-path");
     });
 
@@ -74,7 +74,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu");
+        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu", false);
         expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
     });
 
@@ -89,7 +89,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu/:id");
+        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu/:id", false);
         expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
     });
 
@@ -105,7 +105,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("?property-1=1&property-2=property");
+        expect(getPropertiesSpy).toHaveBeenCalledWith("?property-1=1&property-2=property", false);
         expect(getPropertiesSpy).toHaveLastReturnedWith({ property_1: 1, property_2: "property" });
     });
 
@@ -120,7 +120,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("");
+        expect(getPropertiesSpy).toHaveBeenCalledWith("", false);
         expect(getPropertiesSpy).toHaveLastReturnedWith({});
     });
 
@@ -135,7 +135,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("?name=John%20Doe&property-2=property");
+        expect(getPropertiesSpy).toHaveBeenCalledWith("?name=John%20Doe&property-2=property", false);
         expect(getPropertiesSpy).toHaveLastReturnedWith({ name: "John Doe", property_2: "property" });
     });
 
@@ -150,7 +150,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("?user-property-1=property");
+        expect(getPropertiesSpy).toHaveBeenCalledWith("?user-property-1=property", false);
         expect(getPropertiesSpy).toHaveLastReturnedWith({ user_property_1: "property" });
     });
 
@@ -200,7 +200,7 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 });
 
-describe.only("FullStoryProvider: Meta Configure", () => {
+describe("FullStoryProvider: Meta Configure", () => {
     beforeAll(() => {
         init({ orgId: "123" });
 
