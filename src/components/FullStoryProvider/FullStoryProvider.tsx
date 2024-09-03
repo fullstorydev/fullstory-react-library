@@ -12,8 +12,6 @@ interface FullStoryProviderProps {
 
 // Provider component
 export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, meta = false }) => {
-    const location = useLocation();
-
     const useFSNavigate = (to: string, pageName?: string, properties?: any) => {
         try {
             console.log("to", to);
@@ -22,16 +20,31 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
         }
     };
 
-    useEffect(() => {
+    const handleLocationChange = () => {
         try {
-            const name = getPageName(location.pathname, meta);
-            const properties = getSearchProperties(location.search, meta);
+            const { pathname, search } = window.location;
+
+            const name = getPageName(pathname, meta);
+            const properties = getSearchProperties(search, meta);
 
             setPage(name, properties);
         } catch (error) {
-            console.log("error", error);
+            console.error("FullStoryProvider handleLocationChange error:", error);
         }
-    }, [location]);
+    };
+
+    useEffect(() => {
+        // Call handler immediately for initial location
+        handleLocationChange();
+
+        // Set up `popstate` event listener to call handler on URL change
+        window.addEventListener("popstate", handleLocationChange);
+
+        // Clean up the event listener when the component is unmounted
+        return () => {
+            window.removeEventListener("popstate", handleLocationChange);
+        };
+    }, []);
 
     return <FullStoryContext.Provider value={{ useFSNavigate }}>{children}</FullStoryContext.Provider>;
 };

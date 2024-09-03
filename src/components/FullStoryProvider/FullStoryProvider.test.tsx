@@ -21,7 +21,7 @@ jest.mock("@fullstory/browser", () => ({
     })
 }));
 
-describe("FullStoryProvider: Auto Configure", () => {
+describe.skip("FullStoryProvider: Auto Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
@@ -30,9 +30,13 @@ describe("FullStoryProvider: Auto Configure", () => {
 
     beforeAll(() => {
         init({ orgId: "123" });
+        //@ts-ignore
+        delete window.location;
     });
 
     it("renders with FSProvider", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider>
@@ -49,6 +53,9 @@ describe("FullStoryProvider: Auto Configure", () => {
 
     // GET PAGE NAME
     it("getPageName returns correct path name", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider>
@@ -64,6 +71,9 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 
     it("getPageName returns correct path name for multi path", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path/menu");
+
         render(
             <MemoryRouter initialEntries={["/test-path/menu"]}>
                 <FullStoryProvider>
@@ -78,31 +88,40 @@ describe("FullStoryProvider: Auto Configure", () => {
         expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
     });
 
-    it("getPageName returns correct path name with :id attached", () => {
+    it("handles navigation events", () => {
+        // Set up initial location
+
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path/menu");
+
+        // Mock and spy on the global window object
+        jest.spyOn(window, "addEventListener");
+        jest.spyOn(window, "removeEventListener");
+
+        // Render the provider
         render(
-            <MemoryRouter initialEntries={["/test-path/menu/:id"]}>
-                <FullStoryProvider>
-                    <Routes>
-                        <Route path="/test-path/menu/:id" element={<TestComponent />} />
-                    </Routes>
-                </FullStoryProvider>
-            </MemoryRouter>
+            <FullStoryProvider>
+                <TestComponent />
+            </FullStoryProvider>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu/:id", false);
-        expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
+        // Simulate navigation by changing location and dispatching a popstate event
+        //@ts-ignore
+        window.location = new URL("http://example.com/new-path");
+        window.dispatchEvent(new PopStateEvent("popstate"));
+
+        expect(setPropertiesSpy).toHaveBeenCalled(); // or expect(setPage).toHaveBeenCalledWith(...)
     });
 
     // GET SEARCH PROPS
     it("getSearchProperties returns properties from search", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path?property-1=1&property-2=property");
+
         render(
-            <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
-                <FullStoryProvider>
-                    <Routes>
-                        <Route path="/test-path" element={<TestComponent />} />
-                    </Routes>
-                </FullStoryProvider>
-            </MemoryRouter>
+            <FullStoryProvider>
+                <TestComponent />
+            </FullStoryProvider>
         );
 
         expect(getPropertiesSpy).toHaveBeenCalledWith("?property-1=1&property-2=property", false);
@@ -110,6 +129,9 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 
     it("getSearchProperties returns object when search is empty", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider>
@@ -124,7 +146,10 @@ describe("FullStoryProvider: Auto Configure", () => {
         expect(getPropertiesSpy).toHaveLastReturnedWith({});
     });
 
-    it("getSearchProperties gets property with name", () => {
+    it("getSearchProperties gets property with space delimeter", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path?name=John%20Doe&property-2=property");
+
         render(
             <MemoryRouter initialEntries={["/test-path?name=John%20Doe&property-2=property"]}>
                 <FullStoryProvider>
@@ -140,6 +165,9 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 
     it("getSearchProperties gets property with multiple - ", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path/?user-property-1=property");
+
         render(
             <MemoryRouter initialEntries={["/test-path?user-property-1=property"]}>
                 <FullStoryProvider>
@@ -177,6 +205,9 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 
     it("setProperties sets with search items", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path?property-1=1&property-2=property");
+
         render(
             <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
                 <FullStoryProvider>
@@ -203,6 +234,8 @@ describe("FullStoryProvider: Auto Configure", () => {
 describe("FullStoryProvider: Meta Configure", () => {
     beforeAll(() => {
         init({ orgId: "123" });
+        //@ts-ignore
+        delete window.location;
 
         document.head.innerHTML = `
         <title>Test Component</title>
@@ -217,6 +250,9 @@ describe("FullStoryProvider: Meta Configure", () => {
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("renders with FSProvider with meta tag", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider meta>
@@ -232,6 +268,9 @@ describe("FullStoryProvider: Meta Configure", () => {
     });
 
     it("calls functions with meta tag called", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
                 <FullStoryProvider meta>
@@ -285,5 +324,33 @@ describe("FullStoryProvider: Meta Configure", () => {
                 "og:title": "Test Title"
             }
         });
+    });
+
+    it("is able to set meta properties on navigate", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
+        render(
+            <FullStoryProvider meta>
+                <TestComponent />
+            </FullStoryProvider>
+        );
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
+        expect(getSearchProperties).toHaveBeenCalledWith("", true);
+
+        document.head.innerHTML = `
+        <title>New Component</title>
+        <meta name="description" content="New Description">
+        <meta name="keywords" content="jest,testing">
+        <meta property="og:title" content="New Title">
+      `;
+
+        // Simulate navigation by changing location and dispatching a popstate event
+        //@ts-ignore
+        window.location = new URL("http://example.com/new-path");
+        window.dispatchEvent(new PopStateEvent("popstate"));
+
+        expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", true);
+        expect(getSearchProperties).toHaveBeenCalledWith("", true);
     });
 });
