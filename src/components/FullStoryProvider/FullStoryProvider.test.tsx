@@ -1,11 +1,12 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { Routes, Route } from "react-router-dom";
 import { MemoryRouter } from "react-router"; // MemoryRouter is useful for testing
 import FullStoryProvider from "./FullStoryProvider";
 import * as FS from "../../utils/fullstory";
 import * as Helpers from "../../utils/helpers";
 import { FullStory, init } from "@fullstory/browser";
+import { FullStoryContext } from "./FullStoryContext";
 
 jest.mock("@fullstory/browser", () => ({
     FullStory: jest.fn((apiName, options) => {
@@ -21,7 +22,7 @@ jest.mock("@fullstory/browser", () => ({
     })
 }));
 
-describe.skip("FullStoryProvider: Auto Configure", () => {
+describe("FullStoryProvider: Auto Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
@@ -352,5 +353,53 @@ describe("FullStoryProvider: Meta Configure", () => {
 
         expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", true);
         expect(getSearchProperties).toHaveBeenCalledWith("", true);
+    });
+});
+
+describe.only("FullStoryProvider: useFSNavigate", () => {
+    const TestComponent = () => {
+        const { useFSNavigate } = React.useContext(FullStoryContext);
+
+        // Simulate calling useFSNavigate on mount
+        React.useEffect(() => {
+            act(() => {
+                useFSNavigate("/new-path", "Custom Page Name", { prop1: "value1" });
+            });
+        }, [useFSNavigate]);
+
+        return null; // This component doesn't need to render anything
+    };
+
+    const NewComponent = () => <div>New Component</div>;
+
+    const setPropertiesSpy = jest.spyOn(FS, "setPage");
+    // const getNameSpy = jest.spyOn(Helpers, "getPageName");
+    // const getPropertiesSpy = jest.spyOn(Helpers, "getSearchProperties");
+
+    it("can navigate using useFSNavigate", () => {
+        render(
+            <FullStoryProvider>
+                <TestComponent />
+            </FullStoryProvider>
+        );
+
+        // Assert that setPage was called with the correct arguments
+        expect(setPropertiesSpy).toHaveBeenCalledWith("Custom Page Name", { prop1: "value1" });
+    });
+
+    it("can navigate using useFSNavigate within a BrowserRouter", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider meta>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                        <Route path="/new-path" element={<NewComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Assert that setPage was called with the correct arguments
+        expect(setPropertiesSpy).toHaveBeenCalledWith("Custom Page Name", { prop1: "value1" });
     });
 });
