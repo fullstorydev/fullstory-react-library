@@ -23,6 +23,9 @@ export function getPageName(path: string, meta: boolean = false): string {
     if (meta) {
         return document.title;
     } else {
+        if (path === "/") {
+            return "Home Page";
+        }
         // Remove leading and trailing slashes
         const trimmedUrl = path.replace(/^\/|\/$/g, "");
 
