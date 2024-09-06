@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useRef } from "react";
+import React, { ReactNode, useCallback, useContext, useEffect, useRef } from "react";
 import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
 import { getPageName, getSearchProperties } from "../../utils/helpers";
@@ -8,6 +8,16 @@ interface FullStoryProviderProps {
     children: ReactNode;
     meta?: boolean;
 }
+
+export const useFSNavigate = () => {
+    const context = useContext(FullStoryContext);
+
+    if (context === undefined) {
+        throw new Error("useFSNavigate must be used within a FullStoryProvider");
+    }
+
+    return context.useFSNavigate;
+};
 
 // Provider component
 export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, meta = false }) => {

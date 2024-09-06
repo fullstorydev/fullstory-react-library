@@ -356,7 +356,7 @@ describe("FullStoryProvider: Meta Configure", () => {
     });
 });
 
-describe.only("FullStoryProvider: useFSNavigate", () => {
+describe("FullStoryProvider: useFSNavigate", () => {
     const TestComponent = () => {
         const { useFSNavigate } = React.useContext(FullStoryContext);
 
@@ -373,8 +373,6 @@ describe.only("FullStoryProvider: useFSNavigate", () => {
     const NewComponent = () => <div>New Component</div>;
 
     const setPropertiesSpy = jest.spyOn(FS, "setPage");
-    // const getNameSpy = jest.spyOn(Helpers, "getPageName");
-    // const getPropertiesSpy = jest.spyOn(Helpers, "getSearchProperties");
 
     it("can navigate using useFSNavigate", () => {
         render(
