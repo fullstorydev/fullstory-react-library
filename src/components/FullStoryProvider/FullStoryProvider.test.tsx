@@ -356,7 +356,7 @@ describe("FullStoryProvider: Meta Configure", () => {
     });
 });
 
-describe("FullStoryProvider: useFSNavigate", () => {
+describe.only("FullStoryProvider: useFSNavigate", () => {
     const TestComponent = () => {
         const { useFSNavigate } = React.useContext(FullStoryContext);
 
@@ -374,6 +374,25 @@ describe("FullStoryProvider: useFSNavigate", () => {
 
     const setPropertiesSpy = jest.spyOn(FS, "setPage");
 
+    beforeAll(() => {
+        // Store the original function in case you need to restore it later
+        //@ts-ignore
+        global.originalWindowLocation = window.location;
+        //@ts-ignore
+        delete window.location;
+        window.location = {
+            //@ts-ignore
+            ...global.originalWindowLocation,
+            assign: jest.fn()
+        };
+    });
+
+    afterAll(() => {
+        // Restore the original function
+        //@ts-ignore
+        window.location = global.originalWindowLocation;
+    });
+
     it("can navigate using useFSNavigate", () => {
         render(
             <FullStoryProvider>
@@ -383,6 +402,9 @@ describe("FullStoryProvider: useFSNavigate", () => {
 
         // Assert that setPage was called with the correct arguments
         expect(setPropertiesSpy).toHaveBeenCalledWith("Custom Page Name", { prop1: "value1" });
+
+        // Assert that window.location.assign was called with the correct URL
+        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
     });
 
     it("can navigate using useFSNavigate within a BrowserRouter", () => {
