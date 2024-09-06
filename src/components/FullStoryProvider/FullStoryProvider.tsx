@@ -26,8 +26,7 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
     const useFSNavigate = useCallback(
         (to: string, pageName?: string, properties?: any) => {
             // Navigate the user
-            const newLocation = window.location.hostname + to;
-            window.location.assign(newLocation);
+            window.location.assign(to);
 
             // If a custom pageName is provided, use it, otherwise derive from 'to'
             const name = pageName || getPageName(to, meta);
