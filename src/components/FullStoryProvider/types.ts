@@ -12,8 +12,8 @@ export interface FullStoryProviderProps {
 }
 
 export interface SchemaType {
-    "@type": string;
-    [v: string]: string | number | SchemaType;
+    "@type": string | string[];
+    [v: string]: string | number | SchemaType | any[];
 }
 
 export interface Schema extends SchemaType {

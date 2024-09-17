@@ -23,43 +23,71 @@ function getMetaProperties(): any {
     return props;
 }
 
-function capitalizeFirstLetter(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+function getType(schema: Schema | SchemaType, defType: string): string {
+    let type = schema["@type"];
+
+    switch (typeof type) {
+        case "object":
+            return type.join("_");
+        case "string":
+            return type;
+        default:
+            return defType;
+    }
 }
 
-export function flattenSchema(schema: Schema | SchemaType, properties: any = {}): { [k: string]: any } {
+export function flattenArray(schemas: any[], properties: any): { [k: string]: any } {
+    for (const schema of schemas) {
+        flattenSchema(schema, properties);
+    }
+    return properties;
+}
+
+export function flattenSchema(
+    schema: Schema | SchemaType,
+    properties: any = {},
+    type: string = ""
+): { [k: string]: any } {
     // extract surface level type
-    const type = schema["@type"];
+    type = getType(schema, type);
 
     Object.keys(schema).map((x, i) => {
         // Capture the value of where we are in the object
         const val = schema[x];
 
-        // return if key is type or content
-        if (x === "@type" || x === "@context") {
+        // return if key is type or id
+        if (x === "@type" || x === "@id") {
             return;
         }
 
         // if the value is an object run this function and flatten that values
         if (typeof val === "object") {
-            flattenSchema(val, properties);
+            // determine if object is a list or not
+            Array.isArray(val) ? flattenArray(val, properties) : flattenSchema(val, properties, type);
             return;
         }
 
         // prepare key to be joined
-        const key = x
-            .split("-")
-            .map(y => capitalizeFirstLetter(y))
-            .join("");
+        const key = x.replace(/[^\w\s]/gi, "").toLocaleLowerCase();
 
         // take the type and make new keyname
-        const keyName = `${type.toLowerCase()}${key}`;
+        const keyName = `${type.toLowerCase()}_${key}`;
 
         // apply the value to the newly named key
-        properties[keyName] = val;
+        properties[keyName] = !!properties[keyName] ? `${properties[keyName]} / ${val}` : val;
     });
 
     return properties;
+}
+
+function escapeNewlinesInJsonLikeString(jsonLikeString: string) {
+    // Matches content between quotes, accounting for escaped quotes inside the string.
+    // @ts-ignore
+    return jsonLikeString.replace(/"(.*?)"/gs, (match, group1) => {
+        // Escape newlines inside of the string values
+        const escapedValue = group1.replace(/\n/g, " ").replace(/\r/g, " ");
+        return `"${escapedValue}"`;
+    });
 }
 
 function getSchemaProperties(): any {
@@ -86,10 +114,14 @@ function getSchemaProperties(): any {
 
             // loop over schemas and input values into properties
             for (const schema of schemas) {
+                const jsonOneLine = escapeNewlinesInJsonLikeString(schema.innerHTML);
+
                 // Find content, we can expect it to be JSON parseable
-                const content = JSON.parse(schema.innerHTML);
+                const content = JSON.parse(jsonOneLine);
+
                 // flatten the schema
                 const flatten = flattenSchema(content);
+
                 // insert schema into properties
                 Object.keys(flatten).map(x => {
                     // if key does not exist on object insert it into object

@@ -249,29 +249,20 @@ describe("FullStoryProvider: Schema Configure", () => {
 
         document.head.innerHTML = `
         <script type="application/ld+json">
-                  {
-                      "@context": "http://schema.org",
-                      "@type": "WebSite",
-                      "url": "https://www.lowes.com/",
-                      "potentialAction": {
-                          "@type": "SearchAction",
-                          "target": "https://www.lowes.com/search?searchTerm={searchTerm}",
-                          "query-input": "required name=searchTerm"
-                      }
-                  }</script>
-        <script type="application/ld+json">
-         {
-    "@context": "http:\u002F\u002Fschema.org\u002F",
-    "@type": "Review",
-    "itemReviewed": {
-        "@type": "Product",
-        "name": "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight"
-    },
-    "name": "Unmatched Performance: A Review of My New Laptop",
-    "author": { "@type": "Person", "name": "richlook" },
-   "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": "5" },
-    "publisher": { "@type": "Organization", "name": "Best Buy" }
-}
+                 {
+            "@context": "http:\u002F\u002Fschema.org\u002F",
+            "@type": "Review",
+            "itemReviewed": {
+                "@type": "Product",
+                "name": "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight"
+            },
+            "name": "Unmatched Performance: A Review of My New Laptop",
+            "author": { "@type": "Person", "name": "richlook" },
+            "reviewBody":
+                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.\n\nIn terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.\n\nOverall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play.",
+            "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": "5" },
+            "publisher": { "@type": "Organization", "name": "Best Buy" }
+        }
         </script>
       `;
     });
@@ -316,105 +307,71 @@ describe("FullStoryProvider: Schema Configure", () => {
 
         expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", "schema", {});
         expect(getSearchProperties).toHaveReturnedWith({
-            "organizationName": "Best Buy",
+            "organization_name": "Best Buy",
             "pageName": "Test-path",
-            "personName": "richlook",
-            "productName":
+            "person_name": "richlook",
+            "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
-            "ratingBestRating": "5",
-            "ratingRatingValue": 5,
-            "reviewName": "Unmatched Performance: A Review of My New Laptop",
-            "searchactionQueryInput": "required name=searchTerm",
-            "searchactionTarget": "https://www.lowes.com/search?searchTerm={searchTerm}",
-            "websiteUrl": "https://www.lowes.com/"
+            "rating_bestrating": "5",
+            "rating_ratingvalue": 5,
+            "review_context": "http://schema.org/",
+            "review_name": "Unmatched Performance: A Review of My New Laptop",
+            "review_reviewbody":
+                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play."
         });
     });
-    // it("calls functions with meta tag called", () => {
-    //     //@ts-ignore
-    //     window.location = new URL("http://example.com/test-path");
 
-    //     render(
-    //         <MemoryRouter initialEntries={["/test-path"]}>
-    //             <FullStoryProvider meta>
-    //                 <Routes>
-    //                     <Route path="/test-path" element={<TestComponent />} />
-    //                 </Routes>
-    //             </FullStoryProvider>
-    //         </MemoryRouter>
-    //     );
+    it("is able to set schema properties on navigate", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
 
-    //     expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
-    //     expect(getSearchProperties).toHaveBeenCalledWith("", true);
-    // });
+        render(
+            <FullStoryProvider capture="schema">
+                <TestComponent />
+            </FullStoryProvider>
+        );
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", "schema", {});
+        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", "schema", {});
 
-    // it("is able to extract meta properties from head", () => {
-    //     render(
-    //         <MemoryRouter initialEntries={["/test-path"]}>
-    //             <FullStoryProvider meta>
-    //                 <Routes>
-    //                     <Route path="/test-path" element={<TestComponent />} />
-    //                 </Routes>
-    //             </FullStoryProvider>
-    //         </MemoryRouter>
-    //     );
+        //@ts-ignore
+        delete window.location;
 
-    //     expect(getPageNameSpy).toHaveReturnedWith("Test Component");
-    //     expect(getSearchProperties).toHaveReturnedWith({
-    //         description: "Test Description",
-    //         keywords: "jest,testing",
-    //         "og:title": "Test Title"
-    //     });
-    // });
+        // Simulate navigation by changing location and dispatching a popstate event
+        //@ts-ignore
+        window.location = new URL("http://example.com/new-path");
+        window.dispatchEvent(new PopStateEvent("popstate"));
 
-    // it("is able to set meta properties in FS", () => {
-    //     render(
-    //         <MemoryRouter initialEntries={["/test-path"]}>
-    //             <FullStoryProvider meta>
-    //                 <Routes>
-    //                     <Route path="/test-path" element={<TestComponent />} />
-    //                 </Routes>
-    //             </FullStoryProvider>
-    //         </MemoryRouter>
-    //     );
+        // insert script into head
+        document.head.innerHTML = `
+        <script type="application/ld+json">
+            {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "item": {
+                        "@id": "https://example.com/dresses",
+                        "name": "Dresses"
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "item": {
+                        "@id": "https://example.com/dresses/real",
+                        "name": "Real Dresses"
+                    }
+                }
+            ]
+        }
+        </script>
+      `;
 
-    //     expect(FullStory).toHaveBeenCalledWith("setProperties", {
-    //         type: "page",
-    //         properties: {
-    //             pageName: "Test Component",
-    //             description: "Test Description",
-    //             keywords: "jest,testing",
-    //             "og:title": "Test Title"
-    //         }
-    //     });
-    // });
-
-    // it("is able to set meta properties on navigate", () => {
-    //     //@ts-ignore
-    //     window.location = new URL("http://example.com/test-path");
-
-    //     render(
-    //         <FullStoryProvider meta>
-    //             <TestComponent />
-    //         </FullStoryProvider>
-    //     );
-    //     expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
-    //     expect(getSearchProperties).toHaveBeenCalledWith("", true);
-
-    //     document.head.innerHTML = `
-    //     <title>New Component</title>
-    //     <meta name="description" content="New Description">
-    //     <meta name="keywords" content="jest,testing">
-    //     <meta property="og:title" content="New Title">
-    //   `;
-
-    //     // Simulate navigation by changing location and dispatching a popstate event
-    //     //@ts-ignore
-    //     window.location = new URL("http://example.com/new-path");
-    //     window.dispatchEvent(new PopStateEvent("popstate"));
-
-    //     expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", true);
-    //     expect(getSearchProperties).toHaveBeenCalledWith("", true);
-    // });
+        expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", "schema", {});
+        expect(getSearchProperties).toHaveBeenCalledWith("/new-path", "", "schema", {});
+    });
 });
 
 describe("FullStoryProvider: useFSNavigate", () => {
@@ -486,7 +443,7 @@ describe("FullStoryProvider: useFSNavigate", () => {
 });
 
 describe("Helper Functions", () => {
-    it("flattenSchema can return a flattened schema", () => {
+    it("flattenSchema can return a flattened schema object", () => {
         const data: Schema = {
             "@context": "http:\u002F\u002Fschema.org\u002F",
             "@type": "Review",
@@ -504,15 +461,16 @@ describe("Helper Functions", () => {
 
         const props = Helpers.flattenSchema(data);
         expect(props).toEqual({
-            "productName":
+            "review_context": "http:\u002F\u002Fschema.org\u002F",
+            "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
-            "reviewName": "Unmatched Performance: A Review of My New Laptop",
-            "personName": "richlook",
-            "reviewReviewBody":
+            "review_name": "Unmatched Performance: A Review of My New Laptop",
+            "person_name": "richlook",
+            "review_reviewbody":
                 "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.\n\nIn terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.\n\nOverall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play.",
-            "ratingRatingValue": 5,
-            "ratingBestRating": "5",
-            "organizationName": "Best Buy"
+            "rating_ratingvalue": 5,
+            "rating_bestrating": "5",
+            "organization_name": "Best Buy"
         });
     });
 
@@ -530,9 +488,210 @@ describe("Helper Functions", () => {
 
         const props = Helpers.flattenSchema(data);
         expect(props).toEqual({
-            "websiteUrl": "https://www.lowes.com/",
-            "searchactionTarget": "https://www.lowes.com/search?searchTerm={searchTerm}",
-            "searchactionQueryInput": "required name=searchTerm"
+            "website_context": "http://schema.org",
+            "website_url": "https://www.lowes.com/",
+            "searchaction_target": "https://www.lowes.com/search?searchTerm={searchTerm}",
+            "searchaction_queryinput": "required name=searchTerm"
+        });
+    });
+
+    it("flattenSchema can return a flattend schema array", () => {
+        const data: Schema = {
+            "@context": "https://schema.org",
+            "@type": "RadioSeries",
+            "episode": {
+                "@type": "RadioEpisode",
+                "position": "604",
+                "publication": [
+                    {
+                        "@type": "BroadcastEvent",
+                        "publishedOn": {
+                            "@type": "BroadcastService",
+                            "url": "http://www.bbc.co.uk/radio4"
+                        },
+                        "startDate": "2013-11-07T09:00:00+01:00"
+                    },
+                    {
+                        "@type": "OnDemandEvent",
+                        "startDate": "2013-11-07T09:45:00+01:00"
+                    }
+                ],
+                "url": "http://www.bbc.co.uk/programmes/b03ggc19"
+            },
+            "url": "http://www.bbc.co.uk/programmes/b006qykl"
+        };
+
+        const props = Helpers.flattenSchema(data);
+        expect(props).toEqual({
+            "radioseries_context": "https://schema.org",
+            "radioepisode_position": "604",
+            "broadcastservice_url": "http://www.bbc.co.uk/radio4",
+            "broadcastevent_startdate": "2013-11-07T09:00:00+01:00",
+            "ondemandevent_startdate": "2013-11-07T09:45:00+01:00",
+            "radioepisode_url": "http://www.bbc.co.uk/programmes/b03ggc19",
+            "radioseries_url": "http://www.bbc.co.uk/programmes/b006qykl"
+        });
+    });
+
+    it("flatten schema can handle when type isn't explicit", () => {
+        const data: Schema = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "item": {
+                        "@id": "https://example.com/dresses",
+                        "name": "Dresses"
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "item": {
+                        "@id": "https://example.com/dresses/real",
+                        "name": "Real Dresses"
+                    }
+                }
+            ]
+        };
+
+        const props = Helpers.flattenSchema(data);
+        expect(props).toEqual({
+            "breadcrumblist_context": "https://schema.org",
+            "listitem_name": "Dresses / Real Dresses",
+            "listitem_position": "1 / 2"
+        });
+    });
+
+    it("flatten schema with array for the type", () => {
+        const data: Schema = {
+            "@context": "https://schema.org",
+            "@type": ["ItemList", "CreativeWork"],
+            "name": "Top 5 covers of Bob Dylan Songs",
+            "author": "John Doe",
+            "about": {
+                "@type": "MusicRecording",
+                "byArtist": {
+                    "@type": "MusicGroup",
+                    "name": "Bob Dylan"
+                }
+            },
+            "itemListOrder": "https://schema.org/ItemListOrderAscending",
+            "numberOfItems": 5,
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 5,
+                    "item": {
+                        "@type": "MusicRecording",
+                        "name": "If Not For You",
+                        "byArtist": {
+                            "@type": "MusicGroup",
+                            "name": "George Harrison"
+                        }
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 4,
+                    "item": {
+                        "@type": "MusicRecording",
+                        "name": "The Times They Are A-Changin'",
+                        "byArtist": {
+                            "@type": "MusicGroup",
+                            "name": "Tracy Chapman"
+                        }
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "item": {
+                        "@type": "MusicRecording",
+                        "name": "It Ain't Me Babe",
+                        "byArtist": [
+                            {
+                                "@type": "MusicGroup",
+                                "name": "Johnny Cash"
+                            },
+                            {
+                                "@type": "MusicGroup",
+                                "name": "June Carter Cash"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "item": {
+                        "@type": "MusicRecording",
+                        "name": "Don't Think Twice It's Alright",
+                        "byArtist": {
+                            "@type": "MusicGroup",
+                            "name": "Waylon Jennings"
+                        }
+                    }
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "item": {
+                        "@type": "MusicRecording",
+                        "name": "All Along the Watchtower",
+                        "byArtist": {
+                            "@type": "MusicGroup",
+                            "name": "Jimi Hendrix"
+                        }
+                    }
+                }
+            ]
+        };
+
+        const props = Helpers.flattenSchema(data);
+        expect(props).toEqual({
+            "itemlist_creativework_context": "https://schema.org",
+            "itemlist_creativework_name": "Top 5 covers of Bob Dylan Songs",
+            "itemlist_creativework_author": "John Doe",
+            "itemlist_creativework_itemlistorder": "https://schema.org/ItemListOrderAscending",
+            "itemlist_creativework_numberofitems": 5,
+            "musicgroup_name":
+                "Bob Dylan / George Harrison / Tracy Chapman / Johnny Cash / June Carter Cash / Waylon Jennings / Jimi Hendrix",
+            "musicrecording_name":
+                "If Not For You / The Times They Are A-Changin' / It Ain't Me Babe / Don't Think Twice It's Alright / All Along the Watchtower",
+            "listitem_position": "5 / 4 / 3 / 2 / 1"
         });
     });
 });
+
+/**
+ *  <script type="application/ld+json">
+     {
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement":
+ [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "item":
+   {
+    "@id": "https://example.com/dresses",
+    "name": "Dresses"
+    }
+  },
+  {
+   "@type": "ListItem",
+  "position": 2,
+  "item":
+   {
+     "@id": "https://example.com/dresses/real",
+     "name": "Real Dresses"
+   }
+  }
+ ]
+}
+       </script>
+ */
