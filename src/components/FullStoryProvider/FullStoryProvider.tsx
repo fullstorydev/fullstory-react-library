@@ -1,13 +1,8 @@
-import React, { ReactNode, useCallback, useContext, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
 import { getPageName, getSearchProperties } from "../../utils/helpers";
-
-// Prop types for FullStoryProvider
-interface FullStoryProviderProps {
-    children: ReactNode;
-    meta?: boolean;
-}
+import { FullStoryProviderProps } from "./types";
 
 export const useFSNavigate = () => {
     const context = useContext(FullStoryContext);
@@ -20,7 +15,7 @@ export const useFSNavigate = () => {
 };
 
 // Provider component
-export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, meta = false }) => {
+export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, capture = "url", rules = {} }) => {
     const navigationTriggeredRef = useRef<boolean>(false);
 
     const useFSNavigate = useCallback(
@@ -29,17 +24,23 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
             window.location.assign(to);
 
             // If a custom pageName is provided, use it, otherwise derive from 'to'
-            const name = pageName || getPageName(to, meta);
+            const name = pageName || getPageName(to, capture, rules);
 
             // Set the properties if provided, otherwise an empty object
             const props = properties || {};
 
+            // check if pagename was defined in the properties
+            if (!props.pageName) {
+                // add pageName to properties if not defined
+                props.pageName = name;
+            }
+
             // Indicate that navigation was triggered via useFSNavigate
             navigationTriggeredRef.current = true;
 
-            setPage(name, props);
+            setPage(props);
         },
-        [meta]
+        [capture, rules]
     );
 
     const handleLocationChange = () => {
@@ -51,12 +52,21 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
         }
 
         try {
+            // Pull Search and Pathname from window
             const { pathname, search } = window.location;
 
-            const name = getPageName(pathname, meta);
-            const properties = getSearchProperties(search, meta);
+            // find page name
+            const name = getPageName(pathname, capture, rules);
 
-            setPage(name, properties);
+            // find properties
+            const properties = getSearchProperties(pathname, search, capture, rules);
+            // if pageName does not exist on properties add pageName
+            if (!properties.pageName) {
+                properties.pageName = name;
+            }
+
+            // set propterties with FullStory
+            setPage(properties);
         } catch (error) {
             console.error("FullStoryProvider handleLocationChange error:", error);
         }

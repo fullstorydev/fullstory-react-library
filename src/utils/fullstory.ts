@@ -1,10 +1,9 @@
 import { FullStory } from "@fullstory/browser";
 
-export function setPage(name: string, properties: any = {}) {
+export function setPage(properties: any) {
     return FullStory("setProperties", {
         type: "page",
         properties: {
-            pageName: name,
             ...properties
         }
     });

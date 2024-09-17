@@ -7,6 +7,7 @@ import * as FS from "../../utils/fullstory";
 import * as Helpers from "../../utils/helpers";
 import { FullStory, init } from "@fullstory/browser";
 import { FullStoryContext } from "./FullStoryContext";
+import { Schema } from "./types";
 
 jest.mock("@fullstory/browser", () => ({
     FullStory: jest.fn((apiName, options) => {
@@ -27,7 +28,7 @@ describe("FullStoryProvider: Auto Configure", () => {
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
     const getPropertiesSpy = jest.spyOn(Helpers, "getSearchProperties");
-    const setPropertiesSpy = jest.spyOn(FS, "setPage");
+    const setPageSpy = jest.spyOn(FS, "setPage");
 
     beforeAll(() => {
         init({ orgId: "123" });
@@ -67,7 +68,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path", false);
+        expect(getNameSpy).toHaveBeenCalledWith("/test-path", "url", {});
         expect(getNameSpy).toHaveLastReturnedWith("Test-path");
     });
 
@@ -85,7 +86,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu", false);
+        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu", "url", {});
         expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
     });
 
@@ -111,7 +112,7 @@ describe("FullStoryProvider: Auto Configure", () => {
         window.location = new URL("http://example.com/new-path");
         window.dispatchEvent(new PopStateEvent("popstate"));
 
-        expect(setPropertiesSpy).toHaveBeenCalled(); // or expect(setPage).toHaveBeenCalledWith(...)
+        expect(setPageSpy).toHaveBeenCalled();
     });
 
     // GET SEARCH PROPS
@@ -125,8 +126,12 @@ describe("FullStoryProvider: Auto Configure", () => {
             </FullStoryProvider>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("?property-1=1&property-2=property", false);
-        expect(getPropertiesSpy).toHaveLastReturnedWith({ property_1: 1, property_2: "property" });
+        expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?property-1=1&property-2=property", "url", {});
+        expect(getPropertiesSpy).toHaveLastReturnedWith({
+            pageName: "Test-path",
+            property_1: 1,
+            property_2: "property"
+        });
     });
 
     it("getSearchProperties returns object when search is empty", () => {
@@ -143,8 +148,8 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("", false);
-        expect(getPropertiesSpy).toHaveLastReturnedWith({});
+        expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "", "url", {});
+        expect(getPropertiesSpy).toHaveLastReturnedWith({ "pageName": "Test-path" });
     });
 
     it("getSearchProperties gets property with space delimeter", () => {
@@ -161,13 +166,17 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("?name=John%20Doe&property-2=property", false);
-        expect(getPropertiesSpy).toHaveLastReturnedWith({ name: "John Doe", property_2: "property" });
+        expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?name=John%20Doe&property-2=property", "url", {});
+        expect(getPropertiesSpy).toHaveLastReturnedWith({
+            pageName: "Test-path",
+            name: "John Doe",
+            property_2: "property"
+        });
     });
 
     it("getSearchProperties gets property with multiple - ", () => {
         //@ts-ignore
-        window.location = new URL("http://example.com/test-path/?user-property-1=property");
+        window.location = new URL("http://example.com/test-path?user-property-1=property");
 
         render(
             <MemoryRouter initialEntries={["/test-path?user-property-1=property"]}>
@@ -179,8 +188,8 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("?user-property-1=property", false);
-        expect(getPropertiesSpy).toHaveLastReturnedWith({ user_property_1: "property" });
+        expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?user-property-1=property", "url", {});
+        expect(getPropertiesSpy).toHaveLastReturnedWith({ pageName: "Test-path", user_property_1: "property" });
     });
 
     // SET SEARCH PROPS
@@ -195,7 +204,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(setPropertiesSpy).toHaveBeenCalledWith("Test-path", {});
+        expect(setPageSpy).toHaveBeenCalledWith({ pageName: "Test-path" });
 
         expect(FullStory).toHaveBeenCalledWith("setProperties", {
             type: "page",
@@ -219,7 +228,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(setPropertiesSpy).toHaveBeenCalledWith("Test-path", {});
+        expect(setPageSpy).toHaveBeenCalledWith({ pageName: "Test-path", property_1: 1, property_2: "property" });
 
         expect(FullStory).toHaveBeenCalledWith("setProperties", {
             type: "page",
@@ -232,17 +241,38 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 });
 
-describe("FullStoryProvider: Meta Configure", () => {
+describe("FullStoryProvider: Schema Configure", () => {
     beforeAll(() => {
         init({ orgId: "123" });
         //@ts-ignore
         delete window.location;
 
         document.head.innerHTML = `
-        <title>Test Component</title>
-        <meta name="description" content="Test Description">
-        <meta name="keywords" content="jest,testing">
-        <meta property="og:title" content="Test Title">
+        <script type="application/ld+json">
+                  {
+                      "@context": "http://schema.org",
+                      "@type": "WebSite",
+                      "url": "https://www.lowes.com/",
+                      "potentialAction": {
+                          "@type": "SearchAction",
+                          "target": "https://www.lowes.com/search?searchTerm={searchTerm}",
+                          "query-input": "required name=searchTerm"
+                      }
+                  }</script>
+        <script type="application/ld+json">
+         {
+    "@context": "http:\u002F\u002Fschema.org\u002F",
+    "@type": "Review",
+    "itemReviewed": {
+        "@type": "Product",
+        "name": "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight"
+    },
+    "name": "Unmatched Performance: A Review of My New Laptop",
+    "author": { "@type": "Person", "name": "richlook" },
+   "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": "5" },
+    "publisher": { "@type": "Organization", "name": "Best Buy" }
+}
+        </script>
       `;
     });
 
@@ -250,13 +280,13 @@ describe("FullStoryProvider: Meta Configure", () => {
     const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
-    it("renders with FSProvider with meta tag", () => {
+    it("returns correct page name", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path");
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider meta>
+                <FullStoryProvider capture="schema">
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -266,15 +296,17 @@ describe("FullStoryProvider: Meta Configure", () => {
 
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", "schema", {});
+        expect(getPageNameSpy).toHaveReturnedWith("Test-path");
     });
 
-    it("calls functions with meta tag called", () => {
+    it("returns correct properties", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path");
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider meta>
+                <FullStoryProvider capture="schema">
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -282,81 +314,110 @@ describe("FullStoryProvider: Meta Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
-        expect(getSearchProperties).toHaveBeenCalledWith("", true);
-    });
-
-    it("is able to extract meta properties from head", () => {
-        render(
-            <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider meta>
-                    <Routes>
-                        <Route path="/test-path" element={<TestComponent />} />
-                    </Routes>
-                </FullStoryProvider>
-            </MemoryRouter>
-        );
-
-        expect(getPageNameSpy).toHaveReturnedWith("Test Component");
+        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", "schema", {});
         expect(getSearchProperties).toHaveReturnedWith({
-            description: "Test Description",
-            keywords: "jest,testing",
-            "og:title": "Test Title"
+            "organizationName": "Best Buy",
+            "pageName": "Test-path",
+            "personName": "richlook",
+            "productName":
+                "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "ratingBestRating": "5",
+            "ratingRatingValue": 5,
+            "reviewName": "Unmatched Performance: A Review of My New Laptop",
+            "searchactionQueryInput": "required name=searchTerm",
+            "searchactionTarget": "https://www.lowes.com/search?searchTerm={searchTerm}",
+            "websiteUrl": "https://www.lowes.com/"
         });
     });
+    // it("calls functions with meta tag called", () => {
+    //     //@ts-ignore
+    //     window.location = new URL("http://example.com/test-path");
 
-    it("is able to set meta properties in FS", () => {
-        render(
-            <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider meta>
-                    <Routes>
-                        <Route path="/test-path" element={<TestComponent />} />
-                    </Routes>
-                </FullStoryProvider>
-            </MemoryRouter>
-        );
+    //     render(
+    //         <MemoryRouter initialEntries={["/test-path"]}>
+    //             <FullStoryProvider meta>
+    //                 <Routes>
+    //                     <Route path="/test-path" element={<TestComponent />} />
+    //                 </Routes>
+    //             </FullStoryProvider>
+    //         </MemoryRouter>
+    //     );
 
-        expect(FullStory).toHaveBeenCalledWith("setProperties", {
-            type: "page",
-            properties: {
-                pageName: "Test Component",
-                description: "Test Description",
-                keywords: "jest,testing",
-                "og:title": "Test Title"
-            }
-        });
-    });
+    //     expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
+    //     expect(getSearchProperties).toHaveBeenCalledWith("", true);
+    // });
 
-    it("is able to set meta properties on navigate", () => {
-        //@ts-ignore
-        window.location = new URL("http://example.com/test-path");
+    // it("is able to extract meta properties from head", () => {
+    //     render(
+    //         <MemoryRouter initialEntries={["/test-path"]}>
+    //             <FullStoryProvider meta>
+    //                 <Routes>
+    //                     <Route path="/test-path" element={<TestComponent />} />
+    //                 </Routes>
+    //             </FullStoryProvider>
+    //         </MemoryRouter>
+    //     );
 
-        render(
-            <FullStoryProvider meta>
-                <TestComponent />
-            </FullStoryProvider>
-        );
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
-        expect(getSearchProperties).toHaveBeenCalledWith("", true);
+    //     expect(getPageNameSpy).toHaveReturnedWith("Test Component");
+    //     expect(getSearchProperties).toHaveReturnedWith({
+    //         description: "Test Description",
+    //         keywords: "jest,testing",
+    //         "og:title": "Test Title"
+    //     });
+    // });
 
-        document.head.innerHTML = `
-        <title>New Component</title>
-        <meta name="description" content="New Description">
-        <meta name="keywords" content="jest,testing">
-        <meta property="og:title" content="New Title">
-      `;
+    // it("is able to set meta properties in FS", () => {
+    //     render(
+    //         <MemoryRouter initialEntries={["/test-path"]}>
+    //             <FullStoryProvider meta>
+    //                 <Routes>
+    //                     <Route path="/test-path" element={<TestComponent />} />
+    //                 </Routes>
+    //             </FullStoryProvider>
+    //         </MemoryRouter>
+    //     );
 
-        // Simulate navigation by changing location and dispatching a popstate event
-        //@ts-ignore
-        window.location = new URL("http://example.com/new-path");
-        window.dispatchEvent(new PopStateEvent("popstate"));
+    //     expect(FullStory).toHaveBeenCalledWith("setProperties", {
+    //         type: "page",
+    //         properties: {
+    //             pageName: "Test Component",
+    //             description: "Test Description",
+    //             keywords: "jest,testing",
+    //             "og:title": "Test Title"
+    //         }
+    //     });
+    // });
 
-        expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", true);
-        expect(getSearchProperties).toHaveBeenCalledWith("", true);
-    });
+    // it("is able to set meta properties on navigate", () => {
+    //     //@ts-ignore
+    //     window.location = new URL("http://example.com/test-path");
+
+    //     render(
+    //         <FullStoryProvider meta>
+    //             <TestComponent />
+    //         </FullStoryProvider>
+    //     );
+    //     expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", true);
+    //     expect(getSearchProperties).toHaveBeenCalledWith("", true);
+
+    //     document.head.innerHTML = `
+    //     <title>New Component</title>
+    //     <meta name="description" content="New Description">
+    //     <meta name="keywords" content="jest,testing">
+    //     <meta property="og:title" content="New Title">
+    //   `;
+
+    //     // Simulate navigation by changing location and dispatching a popstate event
+    //     //@ts-ignore
+    //     window.location = new URL("http://example.com/new-path");
+    //     window.dispatchEvent(new PopStateEvent("popstate"));
+
+    //     expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", true);
+    //     expect(getSearchProperties).toHaveBeenCalledWith("", true);
+    // });
 });
 
-describe.only("FullStoryProvider: useFSNavigate", () => {
+describe("FullStoryProvider: useFSNavigate", () => {
     const TestComponent = () => {
         const { useFSNavigate } = React.useContext(FullStoryContext);
 
@@ -372,7 +433,7 @@ describe.only("FullStoryProvider: useFSNavigate", () => {
 
     const NewComponent = () => <div>New Component</div>;
 
-    const setPropertiesSpy = jest.spyOn(FS, "setPage");
+    const setPageSpy = jest.spyOn(FS, "setPage");
 
     beforeAll(() => {
         // Store the original function in case you need to restore it later
@@ -401,7 +462,7 @@ describe.only("FullStoryProvider: useFSNavigate", () => {
         );
 
         // Assert that setPage was called with the correct arguments
-        expect(setPropertiesSpy).toHaveBeenCalledWith("Custom Page Name", { prop1: "value1" });
+        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
 
         // Assert that window.location.assign was called with the correct URL
         expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
@@ -410,7 +471,7 @@ describe.only("FullStoryProvider: useFSNavigate", () => {
     it("can navigate using useFSNavigate within a BrowserRouter", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider meta>
+                <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                         <Route path="/new-path" element={<NewComponent />} />
@@ -420,6 +481,58 @@ describe.only("FullStoryProvider: useFSNavigate", () => {
         );
 
         // Assert that setPage was called with the correct arguments
-        expect(setPropertiesSpy).toHaveBeenCalledWith("Custom Page Name", { prop1: "value1" });
+        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
+    });
+});
+
+describe("Helper Functions", () => {
+    it("flattenSchema can return a flattened schema", () => {
+        const data: Schema = {
+            "@context": "http:\u002F\u002Fschema.org\u002F",
+            "@type": "Review",
+            "itemReviewed": {
+                "@type": "Product",
+                "name": "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight"
+            },
+            "name": "Unmatched Performance: A Review of My New Laptop",
+            "author": { "@type": "Person", "name": "richlook" },
+            "reviewBody":
+                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.\n\nIn terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.\n\nOverall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play.",
+            "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": "5" },
+            "publisher": { "@type": "Organization", "name": "Best Buy" }
+        };
+
+        const props = Helpers.flattenSchema(data);
+        expect(props).toEqual({
+            "productName":
+                "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "reviewName": "Unmatched Performance: A Review of My New Laptop",
+            "personName": "richlook",
+            "reviewReviewBody":
+                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.\n\nIn terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.\n\nOverall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play.",
+            "ratingRatingValue": 5,
+            "ratingBestRating": "5",
+            "organizationName": "Best Buy"
+        });
+    });
+
+    it("can remove all special character from key name", () => {
+        const data: Schema = {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "url": "https://www.lowes.com/",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://www.lowes.com/search?searchTerm={searchTerm}",
+                "query-input": "required name=searchTerm"
+            }
+        };
+
+        const props = Helpers.flattenSchema(data);
+        expect(props).toEqual({
+            "websiteUrl": "https://www.lowes.com/",
+            "searchactionTarget": "https://www.lowes.com/search?searchTerm={searchTerm}",
+            "searchactionQueryInput": "required name=searchTerm"
+        });
     });
 });
