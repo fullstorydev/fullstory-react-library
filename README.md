@@ -121,7 +121,7 @@ const App = () => {
 
 ```
 
-### 6. Capture Rules
+### 6. Singular Page Capture Rules
 
 Additionally we can overried the default capture rules by add capture rules to certain pages.
 
@@ -138,7 +138,6 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />}/>
         <Route path="/dashboard" element={<Dashboard />}/>
-
       </Routes>
     </FullStoryProvider>
   )
@@ -146,9 +145,11 @@ const App = () => {
 
 ```
 
-### 6. useFSNavigate Configuration
+### 7. useFSNavigate Configuration
 
-If you would like FullStory to capture custom pagenames and properties we can use the hook `useFSNavigate()`. We must first implement our `<FullStoryProvider/>` like this.
+If you would like FullStory to capture custom pagenames and properties we can use the hook `useFSNavigate()`. The page name will the set to your custom pagename and the custom properties will be added to the properties captured by the default configuration or page configuration rules.
+
+**Implementation:**
 
 ```
 import { FullStoryProvider } from "@bateman001/fs-react-component-library";
