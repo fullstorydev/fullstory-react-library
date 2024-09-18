@@ -23,7 +23,7 @@ jest.mock("@fullstory/browser", () => ({
     })
 }));
 
-describe("FullStoryProvider: Auto Configure", () => {
+describe("FullStoryProvider: Url Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
@@ -41,7 +41,7 @@ describe("FullStoryProvider: Auto Configure", () => {
         window.location = new URL("http://example.com/test-path");
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -60,7 +60,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -78,7 +78,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path/menu"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path/menu" element={<TestComponent />} />
                     </Routes>
@@ -102,7 +102,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         // Render the provider
         render(
-            <FullStoryProvider>
+            <FullStoryProvider capture={["url"]}>
                 <TestComponent />
             </FullStoryProvider>
         );
@@ -121,7 +121,7 @@ describe("FullStoryProvider: Auto Configure", () => {
         window.location = new URL("http://example.com/test-path?property-1=1&property-2=property");
 
         render(
-            <FullStoryProvider>
+            <FullStoryProvider capture={["url"]}>
                 <TestComponent />
             </FullStoryProvider>
         );
@@ -140,7 +140,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -158,7 +158,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?name=John%20Doe&property-2=property"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -185,7 +185,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?user-property-1=property"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -201,7 +201,7 @@ describe("FullStoryProvider: Auto Configure", () => {
     it("setProperties sets with no search items", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -225,7 +225,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
-                <FullStoryProvider>
+                <FullStoryProvider capture={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -447,7 +447,7 @@ describe("FullStoryProvider: useFSNavigate", () => {
     });
 });
 
-describe("FullStoryProvider: All Configure", () => {
+describe("FullStoryProvider: Auto Configure", () => {
     beforeAll(() => {
         init({ orgId: "123" });
         //@ts-ignore
@@ -483,7 +483,7 @@ describe("FullStoryProvider: All Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["all"]}>
+                <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -503,7 +503,7 @@ describe("FullStoryProvider: All Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["all"]}>
+                <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -535,7 +535,7 @@ describe("FullStoryProvider: All Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["all"]}>
+                <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -561,7 +561,7 @@ describe("FullStoryProvider: All Configure", () => {
     });
 });
 
-describe.only("FullStoryProvider: Multi Default Rule Configure", () => {
+describe("FullStoryProvider: Multi Default Rule Configure", () => {
     beforeAll(() => {
         init({ orgId: "123" });
         //@ts-ignore
