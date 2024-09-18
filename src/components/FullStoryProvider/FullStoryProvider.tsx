@@ -14,7 +14,6 @@ export const useFSNavigate = () => {
     return context.useFSNavigate;
 };
 
-// Provider component
 export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, capture = ["all"], rules = {} }) => {
     const navigationTriggeredRef = useRef<boolean>(false);
 

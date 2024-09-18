@@ -227,6 +227,9 @@ function getAllProperties(search: string): any {
 }
 
 export function getPageName(path: string, capture: CaptureOptions, rules: CaptureRules): string {
+    // remove leading slash from path
+    const pathName = path.replace("/", "");
+
     // define pagename as a string
     let pagename = "";
 
@@ -234,19 +237,22 @@ export function getPageName(path: string, capture: CaptureOptions, rules: Captur
     pagename = capture.includes("meta") ? document.title : getUrlPathName(path);
 
     // If path is in user defined rule, rename page with their suggested rule
-    if (rules[path]) {
-        pagename = rules[path].includes("meta") ? document.title : getUrlPathName(path);
+    if (rules[pathName]) {
+        pagename = rules[pathName].includes("meta") ? document.title : getUrlPathName(path);
     }
 
     return pagename;
 }
 
 export function getSearchProperties(path: string, search: string, capture: CaptureOptions, rules: CaptureRules): any {
+    // remove leading slash from path
+    const pathName = path.replace("/", "");
+
     // create array for rules that copies default capture
     let captureRules = [...capture];
 
     // if path is in the rules we replace the array with the rules
-    captureRules = !!rules[path] ? rules[path] : captureRules;
+    captureRules = !!rules[pathName] ? rules[pathName] : captureRules;
 
     // create property store
     const properties: { [v: string]: string } = {};
