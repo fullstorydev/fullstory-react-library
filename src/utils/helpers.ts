@@ -211,8 +211,16 @@ function getAllProperties(search: string): any {
     const url = getUrlProperties(search);
     const meta = getMetaProperties();
 
-    // flatten the properties
-    const properties = { ...schema, ...url, ...meta };
+    // create array for all properties
+    const allProperties: { [v: string]: string }[] = [schema, url, meta];
+
+    // create propertie store
+    const properties: { [v: string]: string } = {};
+
+    // flatten the properties by check for repeating values in objects
+    for (const props of allProperties) {
+        Object.keys(props).map(x => (properties[x] = !properties[x] ? props[x] : properties[x]));
+    }
 
     return properties;
 }
