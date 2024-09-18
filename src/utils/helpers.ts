@@ -91,7 +91,6 @@ function escapeNewlinesInJsonLikeString(jsonLikeString: string) {
 }
 
 function getSchemaProperties(): any {
-    console.log("getting schema props");
     // grab all scripts in DOM
     const scripts = document.getElementsByTagName("script");
     const schemas = [];
@@ -137,7 +136,7 @@ function getSchemaProperties(): any {
             throw new Error("Can't parse schemas");
         }
     } else {
-        throw new Error("No schemas found");
+        return {};
     }
 }
 
@@ -224,6 +223,23 @@ function getAllProperties(search: string): any {
     }
 
     return properties;
+}
+
+export function combineObjects(obj1: { [v: string]: string }, obj2: { [v: string]: string }): { [v: string]: string } {
+    // create object store
+    const obj: { [v: string]: string } = {};
+
+    // put both objects in arr
+    const arr = [obj1, obj2];
+
+    // loop over objs and place them into store
+    for (const o of arr) {
+        console.log("o", o);
+        Object.keys(o).map(x => (obj[x] = !obj[x] ? o[x] : obj[x]));
+    }
+
+    console.log("obj", obj);
+    return obj;
 }
 
 export function getPageName(path: string, capture: CaptureOptions, rules: CaptureRules): string {

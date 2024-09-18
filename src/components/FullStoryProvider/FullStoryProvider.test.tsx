@@ -379,7 +379,7 @@ describe("FullStoryProvider: Schema Configure", () => {
     });
 });
 
-describe("FullStoryProvider: useFSNavigate", () => {
+describe.only("FullStoryProvider: useFSNavigate", () => {
     const TestComponent = () => {
         const { useFSNavigate } = React.useContext(FullStoryContext);
 
@@ -444,6 +444,42 @@ describe("FullStoryProvider: useFSNavigate", () => {
 
         // Assert that setPage was called with the correct arguments
         expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
+    });
+
+    it("can set all properties using useFSNavigate", () => {
+        document.head.innerHTML = `
+        <script type="application/ld+json">
+           {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "url": "https://www.lowes.com/",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://www.lowes.com/search?searchTerm={searchTerm}",
+                "query-input": "required name=searchTerm"
+            }
+        }
+        </script>
+      `;
+
+        render(
+            <FullStoryProvider>
+                <TestComponent />
+            </FullStoryProvider>
+        );
+
+        // Assert that setPage was called with the correct arguments
+        expect(setPageSpy).toHaveBeenCalledWith({
+            "pageName": "Custom Page Name",
+            "prop1": "value1",
+            "website_context": "http://schema.org",
+            "website_url": "https://www.lowes.com/",
+            "searchaction_target": "https://www.lowes.com/search?searchTerm={searchTerm}",
+            "searchaction_queryinput": "required name=searchTerm"
+        });
+
+        // Assert that window.location.assign was called with the correct URL
+        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
     });
 });
 

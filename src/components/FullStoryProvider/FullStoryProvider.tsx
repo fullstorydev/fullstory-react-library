@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
-import { getPageName, getSearchProperties } from "../../utils/helpers";
+import { combineObjects, getPageName, getSearchProperties } from "../../utils/helpers";
 import { FullStoryProviderProps } from "./types";
 
 export const useFSNavigate = () => {
@@ -26,13 +26,19 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
             const name = pageName || getPageName(to, capture, rules);
 
             // Set the properties if provided, otherwise an empty object
-            const props = properties || {};
+            const { search } = window.location;
+            const defaultProperties = getSearchProperties(to, search, capture, rules);
 
             // check if pagename was defined in the properties
-            if (!props.pageName) {
+            if (!properties.pageName) {
                 // add pageName to properties if not defined
-                props.pageName = name;
+                properties.pageName = name;
             }
+
+            console.log("defaultProperties", defaultProperties);
+            console.log("properties", properties);
+            // combine default captured properties and useNav properties
+            const props = combineObjects(defaultProperties, properties);
 
             // Indicate that navigation was triggered via useFSNavigate
             navigationTriggeredRef.current = true;
