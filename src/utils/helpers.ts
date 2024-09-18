@@ -6,16 +6,29 @@ function isNumber(value: any): boolean {
 
 // TODO: REWORK ALGO
 function getMetaProperties(): any {
+    // capture all meta tags in the DOM
     const metaTags: HTMLCollectionOf<HTMLMetaElement> = document.getElementsByTagName("meta");
-    const props: any = {};
 
+    // create property store
+    const props: { [v: string]: string } = {};
+
+    // loop over tags and insert content into store
     for (let i = 0; i < metaTags.length; i++) {
+        // find all the attributes on the meta tag
         const keys = metaTags[i].getAttributeNames();
 
-        if (keys.includes("name") || keys.includes("property")) {
+        // if the meta tag doesn't include a content attribute we don't want it
+        if (keys.includes("content")) {
+            // EXECUTIVE DECISION: The first attribute on the tag will be the key
             const key: string = metaTags[i].getAttribute(keys[0]) as string;
-            const content = metaTags[i].getAttribute(keys[1]);
 
+            // find the index of content in the attribute array
+            const contentIndex = keys.findIndex(x => x === "content");
+
+            // capture the value of the content attribute
+            const content = metaTags[i].getAttribute(keys[contentIndex]) as string;
+
+            // insert the key and valuee into the property store
             props[key] = content;
         }
     }

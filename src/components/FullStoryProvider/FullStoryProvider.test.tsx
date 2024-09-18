@@ -483,6 +483,96 @@ describe("FullStoryProvider: Schema Configure", () => {
     });
 });
 
+describe("FullStoryProvider: Meta Configure", () => {
+    beforeAll(() => {
+        init({ orgId: "123" });
+        //@ts-ignore
+        delete window.location;
+
+        document.head.innerHTML = `
+        <title>Bathroom vanity at Lowes.com: Search Results</title>
+       <meta name="viewport" content="width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0">
+       <meta property="og:title" content="Bathroom vanity at Lowes.com: Search Results">
+       <meta property="og:type" content="website">
+       <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      `;
+    });
+
+    const TestComponent = () => <div>Test Component</div>;
+    const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
+    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+
+    it("returns correct page name", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider capture={["meta"]}>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["meta"], {});
+        expect(getPageNameSpy).toHaveReturnedWith("Bathroom vanity at Lowes.com: Search Results");
+    });
+
+    it("returns correct properties", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider capture={["meta"]}>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", ["meta"], {});
+        expect(getSearchProperties).toHaveReturnedWith({
+            "content-type": "text/html; charset=UTF-8",
+            "og:title": "Bathroom vanity at Lowes.com: Search Results",
+            "og:type": "website",
+            "pageName": "Bathroom vanity at Lowes.com: Search Results",
+            "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0"
+        });
+    });
+
+    it("returns correct properties when config is all", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path?person_name=rich&property_2=2");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
+        expect(getSearchProperties).toHaveReturnedWith({
+            person_name: "rich",
+            "pageName": "Test-path",
+            property_2: 2,
+            viewport: "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
+            "og:title": "Bathroom vanity at Lowes.com: Search Results",
+            "og:type": "website",
+            "content-type": "text/html; charset=UTF-8"
+        });
+    });
+});
+
 describe("FullStoryProvider: Auto Configure", () => {
     beforeAll(() => {
         init({ orgId: "123" });
@@ -490,6 +580,11 @@ describe("FullStoryProvider: Auto Configure", () => {
         delete window.location;
 
         document.head.innerHTML = `
+          <title>Bathroom vanity at Lowes.com: Search Results</title>
+       <meta name="viewport" content="width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0">
+       <meta property="og:title" content="Bathroom vanity at Lowes.com: Search Results">
+       <meta property="og:type" content="website">
+       <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <script type="application/ld+json">
                  {
             "@context": "http:\u002F\u002Fschema.org\u002F",
@@ -549,6 +644,10 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {});
         expect(getSearchProperties).toHaveReturnedWith({
+            "content-type": "text/html; charset=UTF-8",
+            "og:title": "Bathroom vanity at Lowes.com: Search Results",
+            "og:type": "website",
+            "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
             "property_1": "one",
             "property_2": 2,
             "organization_name": "Best Buy",
@@ -581,6 +680,10 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
         expect(getSearchProperties).toHaveReturnedWith({
+            "content-type": "text/html; charset=UTF-8",
+            "og:title": "Bathroom vanity at Lowes.com: Search Results",
+            "og:type": "website",
+            "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
             "property_2": 2,
             "organization_name": "Best Buy",
             "pageName": "Test-path",
