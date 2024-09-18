@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type CaptureOption = "meta" | "schema" | "all" | "url";
+export type CaptureOption = "meta" | "schema" | "all" | "url" | "none";
 export type CaptureOptions = CaptureOption[];
 
 export interface CaptureRules {

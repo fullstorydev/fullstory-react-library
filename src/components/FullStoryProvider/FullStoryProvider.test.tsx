@@ -23,6 +23,110 @@ jest.mock("@fullstory/browser", () => ({
     })
 }));
 
+describe("FullStoryProvider: useFSNavigate", () => {
+    const TestComponent = () => {
+        const { useFSNavigate } = React.useContext(FullStoryContext);
+
+        // Simulate calling useFSNavigate on mount
+        React.useEffect(() => {
+            act(() => {
+                useFSNavigate("/new-path", "Custom Page Name", { prop1: "value1" });
+            });
+        }, [useFSNavigate]);
+
+        return null; // This component doesn't need to render anything
+    };
+
+    const NewComponent = () => <div>New Component</div>;
+
+    const setPageSpy = jest.spyOn(FS, "setPage");
+
+    beforeAll(() => {
+        // Store the original function in case you need to restore it later
+        //@ts-ignore
+        global.originalWindowLocation = window.location;
+        //@ts-ignore
+        delete window.location;
+        window.location = {
+            //@ts-ignore
+            ...global.originalWindowLocation,
+            assign: jest.fn()
+        };
+    });
+
+    afterAll(() => {
+        // Restore the original function
+        //@ts-ignore
+        window.location = global.originalWindowLocation;
+    });
+
+    it("can navigate using useFSNavigate", () => {
+        render(
+            <FullStoryProvider>
+                <TestComponent />
+            </FullStoryProvider>
+        );
+
+        // Assert that setPage was called with the correct arguments
+        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
+
+        // Assert that window.location.assign was called with the correct URL
+        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
+    });
+
+    it("can navigate using useFSNavigate within a BrowserRouter", () => {
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                        <Route path="/new-path" element={<NewComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Assert that setPage was called with the correct arguments
+        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
+    });
+
+    it("can set all properties using useFSNavigate", () => {
+        document.head.innerHTML = `
+        <script type="application/ld+json">
+           {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "url": "https://www.lowes.com/",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://www.lowes.com/search?searchTerm={searchTerm}",
+                "query-input": "required name=searchTerm"
+            }
+        }
+        </script>
+      `;
+
+        render(
+            <FullStoryProvider>
+                <TestComponent />
+            </FullStoryProvider>
+        );
+
+        // Assert that setPage was called with the correct arguments
+        expect(setPageSpy).toHaveBeenCalledWith({
+            "pageName": "Custom Page Name",
+            "prop1": "value1",
+            "website_context": "http://schema.org",
+            "website_url": "https://www.lowes.com/",
+            "searchaction_target": "https://www.lowes.com/search?searchTerm={searchTerm}",
+            "searchaction_queryinput": "required name=searchTerm"
+        });
+
+        // Assert that window.location.assign was called with the correct URL
+        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
+    });
+});
+
 describe("FullStoryProvider: Url Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
@@ -376,110 +480,6 @@ describe("FullStoryProvider: Schema Configure", () => {
 
         expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", ["schema"], {});
         expect(getSearchProperties).toHaveBeenCalledWith("/new-path", "", ["schema"], {});
-    });
-});
-
-describe.only("FullStoryProvider: useFSNavigate", () => {
-    const TestComponent = () => {
-        const { useFSNavigate } = React.useContext(FullStoryContext);
-
-        // Simulate calling useFSNavigate on mount
-        React.useEffect(() => {
-            act(() => {
-                useFSNavigate("/new-path", "Custom Page Name", { prop1: "value1" });
-            });
-        }, [useFSNavigate]);
-
-        return null; // This component doesn't need to render anything
-    };
-
-    const NewComponent = () => <div>New Component</div>;
-
-    const setPageSpy = jest.spyOn(FS, "setPage");
-
-    beforeAll(() => {
-        // Store the original function in case you need to restore it later
-        //@ts-ignore
-        global.originalWindowLocation = window.location;
-        //@ts-ignore
-        delete window.location;
-        window.location = {
-            //@ts-ignore
-            ...global.originalWindowLocation,
-            assign: jest.fn()
-        };
-    });
-
-    afterAll(() => {
-        // Restore the original function
-        //@ts-ignore
-        window.location = global.originalWindowLocation;
-    });
-
-    it("can navigate using useFSNavigate", () => {
-        render(
-            <FullStoryProvider>
-                <TestComponent />
-            </FullStoryProvider>
-        );
-
-        // Assert that setPage was called with the correct arguments
-        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
-
-        // Assert that window.location.assign was called with the correct URL
-        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
-    });
-
-    it("can navigate using useFSNavigate within a BrowserRouter", () => {
-        render(
-            <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider>
-                    <Routes>
-                        <Route path="/test-path" element={<TestComponent />} />
-                        <Route path="/new-path" element={<NewComponent />} />
-                    </Routes>
-                </FullStoryProvider>
-            </MemoryRouter>
-        );
-
-        // Assert that setPage was called with the correct arguments
-        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
-    });
-
-    it("can set all properties using useFSNavigate", () => {
-        document.head.innerHTML = `
-        <script type="application/ld+json">
-           {
-            "@context": "http://schema.org",
-            "@type": "WebSite",
-            "url": "https://www.lowes.com/",
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://www.lowes.com/search?searchTerm={searchTerm}",
-                "query-input": "required name=searchTerm"
-            }
-        }
-        </script>
-      `;
-
-        render(
-            <FullStoryProvider>
-                <TestComponent />
-            </FullStoryProvider>
-        );
-
-        // Assert that setPage was called with the correct arguments
-        expect(setPageSpy).toHaveBeenCalledWith({
-            "pageName": "Custom Page Name",
-            "prop1": "value1",
-            "website_context": "http://schema.org",
-            "website_url": "https://www.lowes.com/",
-            "searchaction_target": "https://www.lowes.com/search?searchTerm={searchTerm}",
-            "searchaction_queryinput": "required name=searchTerm"
-        });
-
-        // Assert that window.location.assign was called with the correct URL
-        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
     });
 });
 

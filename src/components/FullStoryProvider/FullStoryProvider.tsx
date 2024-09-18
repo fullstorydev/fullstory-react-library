@@ -35,8 +35,6 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
                 properties.pageName = name;
             }
 
-            console.log("defaultProperties", defaultProperties);
-            console.log("properties", properties);
             // combine default captured properties and useNav properties
             const props = combineObjects(defaultProperties, properties);
 

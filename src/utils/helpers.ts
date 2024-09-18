@@ -234,11 +234,9 @@ export function combineObjects(obj1: { [v: string]: string }, obj2: { [v: string
 
     // loop over objs and place them into store
     for (const o of arr) {
-        console.log("o", o);
         Object.keys(o).map(x => (obj[x] = !obj[x] ? o[x] : obj[x]));
     }
 
-    console.log("obj", obj);
     return obj;
 }
 
@@ -246,16 +244,16 @@ export function getPageName(path: string, capture: CaptureOptions, rules: Captur
     // remove leading slash from path
     const pathName = path.replace("/", "");
 
-    // define pagename as a string
-    let pagename = "";
+    // find rules we are capturing
+    const captureRules = !!rules[pathName] ? rules[pathName] : capture;
+
+    // if rule is none return
+    if (captureRules.includes("none")) {
+        return "";
+    }
 
     // check defualt capture for meta
-    pagename = capture.includes("meta") ? document.title : getUrlPathName(path);
-
-    // If path is in user defined rule, rename page with their suggested rule
-    if (rules[pathName]) {
-        pagename = rules[pathName].includes("meta") ? document.title : getUrlPathName(path);
-    }
+    const pagename = capture.includes("meta") ? document.title : getUrlPathName(path);
 
     return pagename;
 }
@@ -264,11 +262,13 @@ export function getSearchProperties(path: string, search: string, capture: Captu
     // remove leading slash from path
     const pathName = path.replace("/", "");
 
-    // create array for rules that copies default capture
-    let captureRules = [...capture];
+    // if path is in the rules we use those rules
+    const captureRules = !!rules[pathName] ? rules[pathName] : [...capture];
 
-    // if path is in the rules we replace the array with the rules
-    captureRules = !!rules[pathName] ? rules[pathName] : captureRules;
+    // if rule is none we return an empty obj
+    if (captureRules.includes("none")) {
+        return {};
+    }
 
     // create property store
     const properties: { [v: string]: string } = {};
