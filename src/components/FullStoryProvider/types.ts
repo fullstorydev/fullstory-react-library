@@ -1,13 +1,15 @@
 import { ReactNode } from "react";
 
 export type CaptureOption = "meta" | "schema" | "all" | "url";
+export type CaptureOptions = CaptureOption[];
+
 export interface CaptureRules {
-    [pathname: string]: CaptureOption;
+    [pathname: string]: CaptureOptions;
 }
 // Prop types for FullStoryProvider
 export interface FullStoryProviderProps {
     children: ReactNode;
-    capture?: CaptureOption;
+    capture?: CaptureOptions;
     rules?: CaptureRules;
 }
 

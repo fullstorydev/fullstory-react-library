@@ -1,4 +1,4 @@
-import { CaptureOption, CaptureRules, Schema, SchemaType } from "../components/FullStoryProvider/types";
+import { CaptureOptions, CaptureRules, Schema, SchemaType } from "../components/FullStoryProvider/types";
 
 function isNumber(value: any): boolean {
     return !isNaN(value);
@@ -91,6 +91,7 @@ function escapeNewlinesInJsonLikeString(jsonLikeString: string) {
 }
 
 function getSchemaProperties(): any {
+    console.log("getting schema props");
     // grab all scripts in DOM
     const scripts = document.getElementsByTagName("script");
     const schemas = [];
@@ -225,47 +226,55 @@ function getAllProperties(search: string): any {
     return properties;
 }
 
-export function getPageName(path: string, capture: CaptureOption, rules: CaptureRules): string {
+export function getPageName(path: string, capture: CaptureOptions, rules: CaptureRules): string {
     // define pagename as a string
     let pagename = "";
 
-    // define rule as the default capture option
-    let rule = capture;
+    // check defualt capture for meta
+    pagename = capture.includes("meta") ? document.title : getUrlPathName(path);
 
-    // If path is in user defined rule, use their suggested rule
+    // If path is in user defined rule, rename page with their suggested rule
     if (rules[path]) {
-        rule = rules[path];
-    }
-
-    // Use switch to find the paganame by the rule
-    switch (rule) {
-        case "meta":
-            pagename = document.title;
-        default:
-            pagename = getUrlPathName(path);
+        pagename = rules[path].includes("meta") ? document.title : getUrlPathName(path);
     }
 
     return pagename;
 }
 
-export function getSearchProperties(path: string, search: string, capture: CaptureOption, rules: CaptureRules): any {
-    // Define default rule as capture option
-    let rule = capture;
+export function getSearchProperties(path: string, search: string, capture: CaptureOptions, rules: CaptureRules): any {
+    // create array for rules that copies default capture
+    let captureRules = [...capture];
 
-    // If path is in user defined rule, use their suggested rule
-    if (rules[path]) {
-        rule = rules[path];
+    // if path is in the rules we replace the array with the rules
+    captureRules = !!rules[path] ? rules[path] : captureRules;
+
+    // create property store
+    const properties: { [v: string]: string } = {};
+
+    // if array includes all we run getAll and return
+    if (captureRules.includes("all")) {
+        return getAllProperties(search);
     }
 
-    // Use switch to find the properties by the rule
-    switch (rule) {
-        case "meta":
-            return getMetaProperties();
-        case "schema":
-            return getSchemaProperties();
-        case "url":
-            return getUrlProperties(search);
-        case "all":
-            return getAllProperties(search);
+    // loop over rules and input properties in property store
+    for (const rule of captureRules) {
+        // create temp store for properties
+        let props: { [v: string]: string } = {};
+
+        // choose which properties to extract by the rule
+        if (rule === "meta") {
+            props = getMetaProperties();
+        }
+        if (rule === "schema") {
+            props = getSchemaProperties();
+        }
+        if (rule === "url") {
+            props = getUrlProperties(search);
+        }
+
+        // check property store for duplicates and insert properties
+        Object.keys(props).map(x => (properties[x] = !properties[x] ? props[x] : properties[x]));
     }
+
+    return properties;
 }
