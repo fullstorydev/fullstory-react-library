@@ -538,7 +538,7 @@ describe("FullStoryProvider: Meta Configure", () => {
         // Check if the route is rendered correctly with TestComponent
         expect(getProperties).toHaveBeenCalledWith("/test-path", "", ["meta"], {});
         expect(getProperties).toHaveReturnedWith({
-            "content-type": "text/html; charset=UTF-8",
+            "content_type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
             "pageName": "Bathroom vanity at Lowes.com: Search Results",
@@ -568,7 +568,7 @@ describe("FullStoryProvider: Meta Configure", () => {
             viewport: "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
-            "content-type": "text/html; charset=UTF-8"
+            "content_type": "text/html; charset=UTF-8"
         });
     });
 });
@@ -684,7 +684,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {});
         expect(getProperties).toHaveReturnedWith({
-            "content-type": "text/html; charset=UTF-8",
+            "content_type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
             "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
@@ -720,7 +720,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         expect(getProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
         expect(getProperties).toHaveReturnedWith({
-            "content-type": "text/html; charset=UTF-8",
+            "content_type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
             "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",

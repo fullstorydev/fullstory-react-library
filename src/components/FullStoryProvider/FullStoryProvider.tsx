@@ -86,7 +86,7 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
         return () => {
             window.removeEventListener("popstate", handleLocationChange);
         };
-    }, []);
+    }, [window.location]);
 
     return <FullStoryContext.Provider value={{ useFSNavigate }}>{children}</FullStoryContext.Provider>;
 };

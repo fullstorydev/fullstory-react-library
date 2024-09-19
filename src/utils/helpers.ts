@@ -28,7 +28,7 @@ function getMetaProperties(): any {
             const content = metaTags[i].getAttribute(keys[contentIndex]) as string;
 
             // insert the key and valuee into the property store
-            props[key] = content;
+            props[key.replace("-", "_")] = content;
         }
     }
 
@@ -305,6 +305,5 @@ export function getProperties(path: string, search: string, capture: CaptureOpti
         Object.keys(props).map(x => (properties[x] = !properties[x] ? props[x] : properties[x]));
     }
 
-    console.log("properties", properties);
     return properties;
 }
