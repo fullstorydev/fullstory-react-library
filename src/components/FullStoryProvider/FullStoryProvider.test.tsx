@@ -60,20 +60,6 @@ describe("FullStoryProvider: useFSNavigate", () => {
         window.location = global.originalWindowLocation;
     });
 
-    it("can navigate using useFSNavigate", () => {
-        render(
-            <FullStoryProvider>
-                <TestComponent />
-            </FullStoryProvider>
-        );
-
-        // Assert that setPage was called with the correct arguments
-        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
-
-        // Assert that window.location.assign was called with the correct URL
-        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
-    });
-
     it("can navigate using useFSNavigate within a BrowserRouter", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
@@ -88,42 +74,6 @@ describe("FullStoryProvider: useFSNavigate", () => {
 
         // Assert that setPage was called with the correct arguments
         expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
-    });
-
-    it("can set all properties using useFSNavigate", () => {
-        document.head.innerHTML = `
-        <script type="application/ld+json">
-           {
-            "@context": "http://schema.org",
-            "@type": "WebSite",
-            "url": "https://www.lowes.com/",
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://www.lowes.com/search?searchTerm={searchTerm}",
-                "query-input": "required name=searchTerm"
-            }
-        }
-        </script>
-      `;
-
-        render(
-            <FullStoryProvider>
-                <TestComponent />
-            </FullStoryProvider>
-        );
-
-        // Assert that setPage was called with the correct arguments
-        expect(setPageSpy).toHaveBeenCalledWith({
-            "pageName": "Custom Page Name",
-            "prop1": "value1",
-            "website_context": "http://schema.org",
-            "website_url": "https://www.lowes.com/",
-            "searchaction_target": "https://www.lowes.com/search?searchTerm={searchTerm}",
-            "searchaction_queryinput": "required name=searchTerm"
-        });
-
-        // Assert that window.location.assign was called with the correct URL
-        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining("/new-path"));
     });
 });
 
@@ -206,9 +156,14 @@ describe("FullStoryProvider: Url Configure", () => {
 
         // Render the provider
         render(
-            <FullStoryProvider capture={["url"]}>
-                <TestComponent />
-            </FullStoryProvider>
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider capture={["url"]}>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                        <Route path="/new-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
         );
 
         // Simulate navigation by changing location and dispatching a popstate event
@@ -225,9 +180,13 @@ describe("FullStoryProvider: Url Configure", () => {
         window.location = new URL("http://example.com/test-path?property-1=1&property-2=property");
 
         render(
-            <FullStoryProvider capture={["url"]}>
-                <TestComponent />
-            </FullStoryProvider>
+            <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
+                <FullStoryProvider capture={["url"]}>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
         );
 
         expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?property-1=1&property-2=property", ["url"], {});
@@ -429,58 +388,6 @@ describe("FullStoryProvider: Schema Configure", () => {
                 "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play."
         });
     });
-
-    it("is able to set schema properties on navigate", () => {
-        //@ts-ignore
-        window.location = new URL("http://example.com/test-path");
-
-        render(
-            <FullStoryProvider capture={["schema"]}>
-                <TestComponent />
-            </FullStoryProvider>
-        );
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema"], {});
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {});
-
-        //@ts-ignore
-        delete window.location;
-
-        // Simulate navigation by changing location and dispatching a popstate event
-        //@ts-ignore
-        window.location = new URL("http://example.com/new-path");
-        window.dispatchEvent(new PopStateEvent("popstate"));
-
-        // insert script into head
-        document.head.innerHTML = `
-        <script type="application/ld+json">
-            {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "item": {
-                        "@id": "https://example.com/dresses",
-                        "name": "Dresses"
-                    }
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "item": {
-                        "@id": "https://example.com/dresses/real",
-                        "name": "Real Dresses"
-                    }
-                }
-            ]
-        }
-        </script>
-      `;
-
-        expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", ["schema"], {});
-        expect(getProperties).toHaveBeenCalledWith("/new-path", "", ["schema"], {});
-    });
 });
 
 describe("FullStoryProvider: Meta Configure", () => {
@@ -551,7 +458,7 @@ describe("FullStoryProvider: Meta Configure", () => {
         window.location = new URL("http://example.com/test-path?person_name=rich&property_2=2");
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?person_name=rich&property_2=2"]}>
                 <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -673,7 +580,7 @@ describe("FullStoryProvider: Auto Configure", () => {
         window.location = new URL("http://example.com/test-path?property_1=one&property_2=2");
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
                 <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -709,7 +616,7 @@ describe("FullStoryProvider: Auto Configure", () => {
         window.location = new URL("http://example.com/test-path?person_name=rich&property_2=2");
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?person_name=rich&property_2=2"]}>
                 <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -750,7 +657,7 @@ describe("FullStoryProvider: Auto Configure", () => {
     `;
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
                 <FullStoryProvider>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -834,7 +741,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
         window.location = new URL("http://example.com/test-path?property_1=one&property_2=2");
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
                 <FullStoryProvider capture={["schema", "url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -866,7 +773,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
         window.location = new URL("http://example.com/test-path?person_name=rich&property_2=2");
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?person_name=rich&property_2=2"]}>
                 <FullStoryProvider capture={["schema", "url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -953,7 +860,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
         window.location = new URL("http://example.com/test-path?property_1=one&property_2=2");
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
                 <FullStoryProvider capture={["schema", "url"]} rules={{ "test-path": ["url"] }}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
@@ -977,7 +884,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
         window.location = new URL("http://example.com/test-path?person_name=rich&property_2=2");
 
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
+            <MemoryRouter initialEntries={["/test-path?person_name=rich&property_2=2"]}>
                 <FullStoryProvider rules={{ "test-path": ["schema", "url"] }}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />

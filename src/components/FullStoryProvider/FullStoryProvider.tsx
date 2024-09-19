@@ -3,7 +3,7 @@ import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
 import { combineObjects, getPageName, getProperties } from "../../utils/helpers";
 import { FullStoryProviderProps } from "./types";
-
+import { useLocation, useNavigate } from "react-router-dom";
 export const useFSNavigate = () => {
     const context = useContext(FullStoryContext);
 
@@ -16,11 +16,13 @@ export const useFSNavigate = () => {
 
 export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, capture = ["all"], rules = {} }) => {
     const navigationTriggeredRef = useRef<boolean>(false);
+    const location = useLocation();
+    const nav = useNavigate();
 
     const useFSNavigate = useCallback(
         (to: string, pageName?: string, properties?: any) => {
             // Navigate the user
-            window.location.assign(to);
+            nav(to);
 
             // If a custom pageName is provided, use it, otherwise derive from 'to'
             const name = pageName || getPageName(to, capture, rules);
@@ -55,8 +57,8 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
         }
 
         try {
-            // Pull Search and Pathname from window
-            const { pathname, search } = window.location;
+            // Pull Search and Pathname from location
+            const { pathname, search } = location;
 
             // find page name
             const name = getPageName(pathname, capture, rules);
@@ -76,17 +78,8 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
     };
 
     useEffect(() => {
-        // Call handler immediately for initial location
         handleLocationChange();
-
-        // Set up `popstate` event listener to call handler on URL change
-        window.addEventListener("popstate", handleLocationChange);
-
-        // Clean up the event listener when the component is unmounted
-        return () => {
-            window.removeEventListener("popstate", handleLocationChange);
-        };
-    }, [window.location]);
+    }, [location, handleLocationChange]);
 
     return <FullStoryContext.Provider value={{ useFSNavigate }}>{children}</FullStoryContext.Provider>;
 };
