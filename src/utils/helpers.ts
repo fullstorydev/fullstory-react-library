@@ -193,9 +193,6 @@ function getUrlPathName(path: string): string {
         return "Home Page";
     }
 
-    // Remove leading and trailing slashes
-    const trimmedUrl = path.replace(/^\/|\/$/g, "");
-
     // Split the path into segments
     const segments = path.split("/").filter(segment => segment);
 
@@ -260,7 +257,7 @@ export function getPageName(path: string, capture: CaptureOptions, rules: Captur
     }
 
     // check defualt capture for meta
-    const pagename = capture.includes("meta") ? document.title : getUrlPathName(path);
+    const pagename = captureRules.includes("meta") ? document.title : getUrlPathName(path);
 
     return pagename;
 }
@@ -270,7 +267,7 @@ export function getProperties(path: string, search: string, capture: CaptureOpti
     const pathName = path.replace("/", "");
 
     // if path is in the rules we use those rules
-    const captureRules = !!rules[pathName] ? rules[pathName] : [...capture];
+    const captureRules = !!rules[pathName] ? rules[pathName] : capture;
 
     // if rule is none we return an empty obj
     if (captureRules.includes("none")) {

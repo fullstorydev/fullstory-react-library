@@ -855,13 +855,13 @@ describe("FullStoryProvider: Path Rule Configure", () => {
         expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
-    it("returns correct properties", () => {
+    it("returns correct properties when default is defined", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path?property_1=one&property_2=2");
 
         render(
             <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
-                <FullStoryProvider capture={["schema", "url"]} rules={{ "test-path": ["url"] }}>
+                <FullStoryProvider capture={["schema", "meta"]} rules={{ "test-path": ["url"] }}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -869,7 +869,31 @@ describe("FullStoryProvider: Path Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "url"], {
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "meta"], {
+            "test-path": ["url"]
+        });
+        expect(getProperties).toHaveReturnedWith({
+            "pageName": "Test Path",
+            "property_1": "one",
+            "property_2": 2
+        });
+    });
+
+    it("returns correct properties when default is all", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path?property_1=one&property_2=2");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
+                <FullStoryProvider rules={{ "test-path": ["url"] }}>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "meta"], {
             "test-path": ["url"]
         });
         expect(getProperties).toHaveReturnedWith({
