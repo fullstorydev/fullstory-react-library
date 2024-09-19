@@ -131,7 +131,7 @@ describe("FullStoryProvider: Url Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
-    const getPropertiesSpy = jest.spyOn(Helpers, "getSearchProperties");
+    const getPropertiesSpy = jest.spyOn(Helpers, "getProperties");
     const setPageSpy = jest.spyOn(FS, "setPage");
 
     beforeAll(() => {
@@ -220,7 +220,7 @@ describe("FullStoryProvider: Url Configure", () => {
     });
 
     // GET SEARCH PROPS
-    it("getSearchProperties returns properties from search", () => {
+    it("getProperties returns properties from search", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path?property-1=1&property-2=property");
 
@@ -238,7 +238,7 @@ describe("FullStoryProvider: Url Configure", () => {
         });
     });
 
-    it("getSearchProperties returns object when search is empty", () => {
+    it("getProperties returns object when search is empty", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path");
 
@@ -256,7 +256,7 @@ describe("FullStoryProvider: Url Configure", () => {
         expect(getPropertiesSpy).toHaveLastReturnedWith({ "pageName": "Test Path" });
     });
 
-    it("getSearchProperties gets property with space delimeter", () => {
+    it("getProperties gets property with space delimeter", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path?name=John%20Doe&property-2=property");
 
@@ -283,7 +283,7 @@ describe("FullStoryProvider: Url Configure", () => {
         });
     });
 
-    it("getSearchProperties gets property with multiple - ", () => {
+    it("getProperties gets property with multiple - ", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path?user-property-1=property");
 
@@ -377,7 +377,7 @@ describe("FullStoryProvider: Schema Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
+    const getProperties = jest.spyOn(Helpers, "getProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -414,8 +414,8 @@ describe("FullStoryProvider: Schema Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {});
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {});
+        expect(getProperties).toHaveReturnedWith({
             "organization_name": "Best Buy",
             "pageName": "Test Path",
             "person_name": "richlook",
@@ -440,7 +440,7 @@ describe("FullStoryProvider: Schema Configure", () => {
             </FullStoryProvider>
         );
         expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema"], {});
-        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {});
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {});
 
         //@ts-ignore
         delete window.location;
@@ -479,7 +479,7 @@ describe("FullStoryProvider: Schema Configure", () => {
       `;
 
         expect(getPageNameSpy).toHaveBeenCalledWith("/new-path", ["schema"], {});
-        expect(getSearchProperties).toHaveBeenCalledWith("/new-path", "", ["schema"], {});
+        expect(getProperties).toHaveBeenCalledWith("/new-path", "", ["schema"], {});
     });
 });
 
@@ -499,7 +499,7 @@ describe("FullStoryProvider: Meta Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
+    const getProperties = jest.spyOn(Helpers, "getProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -536,8 +536,8 @@ describe("FullStoryProvider: Meta Configure", () => {
         );
 
         // Check if the route is rendered correctly with TestComponent
-        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", ["meta"], {});
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "", ["meta"], {});
+        expect(getProperties).toHaveReturnedWith({
             "content-type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
@@ -560,8 +560,8 @@ describe("FullStoryProvider: Meta Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
+        expect(getProperties).toHaveReturnedWith({
             person_name: "rich",
             "pageName": "Test Path",
             property_2: 2,
@@ -605,7 +605,7 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
+    const getProperties = jest.spyOn(Helpers, "getProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -682,8 +682,8 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {});
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {});
+        expect(getProperties).toHaveReturnedWith({
             "content-type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
@@ -718,8 +718,8 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
+        expect(getProperties).toHaveReturnedWith({
             "content-type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
@@ -736,6 +736,45 @@ describe("FullStoryProvider: Auto Configure", () => {
             "review_name": "Unmatched Performance: A Review of My New Laptop",
             "review_reviewbody":
                 "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play."
+        });
+    });
+
+    it("returns correct properties from Wells Cargo", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path?property_1=one&property_2=2");
+        document.head.innerHTML = `
+      <script type="application/ld+json">
+             {"@context":"https://schema.org/","@graph":[{"@type":"BankAccount","name":"Select Platinum account","offers":{"@type":"Offer","eligibleCustomerType":"http://purl.org/goodrelations/v1#Enduser","priceSpecification":{"@type":"PriceSpecification","priceCurrency":"GBP","price":"16","eligibleQuantity":{"@type":"QuantitativeValue","value":"1","unitCode":"ANN"}},"description":"You need to be aged 18 or over, and UK resident to apply.","offeredBy":{"@type":"BankOrCreditUnion","@id":"http://rbs.co.uk","name":"RBS"}},"feesAndCommissionsSpecification":"http://personal.rbs.co.uk/content/dam/rbs_co_uk/currentaccounts/downloads/Reward/Personal%20and%20Private%20Current%20Account%20Fees%20and%20Interest%20Rates.pdf"}]}
+
+      </script>
+    `;
+
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {});
+        expect(getProperties).toHaveReturnedWith({
+            "bankaccount_feesandcommissionsspecification":
+                "http://personal.rbs.co.uk/content/dam/rbs_co_uk/currentaccounts/downloads/Reward/Personal%20and%20Private%20Current%20Account%20Fees%20and%20Interest%20Rates.pdf",
+            "bankaccount_name": "Select Platinum account",
+            "bankorcreditunion_name": "RBS",
+            "context": "https://schema.org/",
+            "offer_description": "You need to be aged 18 or over, and UK resident to apply.",
+            "offer_eligiblecustomertype": "http://purl.org/goodrelations/v1#Enduser",
+            "pageName": "Test Path",
+            "pricespecification_price": "16",
+            "pricespecification_pricecurrency": "GBP",
+            "property_1": "one",
+            "property_2": 2,
+            "quantitativevalue_unitcode": "ANN",
+            "quantitativevalue_value": "1"
         });
     });
 });
@@ -767,7 +806,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
+    const getProperties = jest.spyOn(Helpers, "getProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -804,13 +843,8 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith(
-            "/test-path",
-            "?property_1=one&property_2=2",
-            ["schema", "url"],
-            {}
-        );
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "url"], {});
+        expect(getProperties).toHaveReturnedWith({
             "property_1": "one",
             "property_2": 2,
             "organization_name": "Best Buy",
@@ -841,13 +875,13 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith(
+        expect(getProperties).toHaveBeenCalledWith(
             "/test-path",
             "?person_name=rich&property_2=2",
             ["schema", "url"],
             {}
         );
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveReturnedWith({
             "property_2": 2,
             "organization_name": "Best Buy",
             "pageName": "Test Path",
@@ -891,7 +925,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getSearchProperties = jest.spyOn(Helpers, "getSearchProperties");
+    const getProperties = jest.spyOn(Helpers, "getProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -928,13 +962,10 @@ describe("FullStoryProvider: Path Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith(
-            "/test-path",
-            "?property_1=one&property_2=2",
-            ["schema", "url"],
-            { "test-path": ["url"] }
-        );
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "url"], {
+            "test-path": ["url"]
+        });
+        expect(getProperties).toHaveReturnedWith({
             "pageName": "Test Path",
             "property_1": "one",
             "property_2": 2
@@ -955,10 +986,10 @@ describe("FullStoryProvider: Path Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {
+        expect(getProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {
             "test-path": ["schema", "url"]
         });
-        expect(getSearchProperties).toHaveReturnedWith({
+        expect(getProperties).toHaveReturnedWith({
             "property_2": 2,
             "organization_name": "Best Buy",
             "pageName": "Test Path",

@@ -37,14 +37,13 @@ function getMetaProperties(): any {
 
 function getType(schema: Schema | SchemaType, defType: string): string {
     let type = schema["@type"];
-
     switch (typeof type) {
         case "object":
             return type.join("_");
         case "string":
             return type;
         default:
-            return defType;
+            return !!defType ? defType : "";
     }
 }
 
@@ -83,7 +82,7 @@ export function flattenSchema(
         const key = x.replace(/[^\w\s]/gi, "").toLocaleLowerCase();
 
         // take the type and make new keyname
-        const keyName = `${type.toLowerCase()}_${key}`;
+        const keyName = type === "" ? key : `${type.toLowerCase()}_${key}`;
 
         // apply the value to the newly named key
         properties[keyName] = !!properties[keyName] ? `${properties[keyName]} / ${val}` : val;
@@ -266,7 +265,7 @@ export function getPageName(path: string, capture: CaptureOptions, rules: Captur
     return pagename;
 }
 
-export function getSearchProperties(path: string, search: string, capture: CaptureOptions, rules: CaptureRules): any {
+export function getProperties(path: string, search: string, capture: CaptureOptions, rules: CaptureRules): any {
     // remove leading slash from path
     const pathName = path.replace("/", "");
 
@@ -306,5 +305,6 @@ export function getSearchProperties(path: string, search: string, capture: Captu
         Object.keys(props).map(x => (properties[x] = !properties[x] ? props[x] : properties[x]));
     }
 
+    console.log("properties", properties);
     return properties;
 }
