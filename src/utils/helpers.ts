@@ -4,7 +4,6 @@ function isNumber(value: any): boolean {
     return !isNaN(value);
 }
 
-// TODO: REWORK ALGO
 function getMetaProperties(): any {
     // capture all meta tags in the DOM
     const metaTags: HTMLCollectionOf<HTMLMetaElement> = document.getElementsByTagName("meta");
@@ -190,32 +189,28 @@ function getUrlProperties(search: string): any {
 }
 
 function getUrlPathName(path: string): string {
+    // if the path is not defined assume it's the home page
+    if (path === "/") {
+        return "Home Page";
+    }
+
     // Remove leading and trailing slashes
     const trimmedUrl = path.replace(/^\/|\/$/g, "");
 
     // Split the path into segments
-    const segments = trimmedUrl.split("/");
+    const segments = path.split("/").filter(segment => segment);
 
-    // Process segments to capitalize and exclude dynamic parts
-    const pageNameParts = segments
-        .map(segment => {
-            // Exclude dynamic segments starting with ':'
-            if (segment.startsWith(":")) {
-                return "";
-            }
-            // Exclude the word "page" from segments unless it's inherent in the path
-            if (segment.toLowerCase() === "page") {
-                return "";
-            }
-            // Capitalize the first letter of each segment
-            return segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase();
-        })
-        .filter(part => part !== ""); // Remove any empty strings resulting from the mapping
+    // Capitalize the first letter of each segment and join with ' / '
+    const formattedPath = segments
+        .map(segment =>
+            segment // Split by hyphens for multi-word segment, capitalize, and then join.
+                .split("-")
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(" ")
+        )
+        .join(" / ");
 
-    // Join the processed segments with a space
-    const pageName = pageNameParts.join(" / ");
-
-    return pageName;
+    return formattedPath;
 }
 
 function getAllProperties(search: string): any {

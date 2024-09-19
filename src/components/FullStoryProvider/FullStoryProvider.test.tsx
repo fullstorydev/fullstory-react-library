@@ -173,7 +173,7 @@ describe("FullStoryProvider: Url Configure", () => {
         );
 
         expect(getNameSpy).toHaveBeenCalledWith("/test-path", ["url"], {});
-        expect(getNameSpy).toHaveLastReturnedWith("Test-path");
+        expect(getNameSpy).toHaveLastReturnedWith("Test Path");
     });
 
     it("getPageName returns correct path name for multi path", () => {
@@ -191,7 +191,7 @@ describe("FullStoryProvider: Url Configure", () => {
         );
 
         expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu", ["url"], {});
-        expect(getNameSpy).toHaveLastReturnedWith("Test-path / Menu");
+        expect(getNameSpy).toHaveLastReturnedWith("Test Path / Menu");
     });
 
     it("handles navigation events", () => {
@@ -232,7 +232,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?property-1=1&property-2=property", ["url"], {});
         expect(getPropertiesSpy).toHaveLastReturnedWith({
-            pageName: "Test-path",
+            pageName: "Test Path",
             property_1: 1,
             property_2: "property"
         });
@@ -253,7 +253,7 @@ describe("FullStoryProvider: Url Configure", () => {
         );
 
         expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "", ["url"], {});
-        expect(getPropertiesSpy).toHaveLastReturnedWith({ "pageName": "Test-path" });
+        expect(getPropertiesSpy).toHaveLastReturnedWith({ "pageName": "Test Path" });
     });
 
     it("getSearchProperties gets property with space delimeter", () => {
@@ -277,7 +277,7 @@ describe("FullStoryProvider: Url Configure", () => {
             {}
         );
         expect(getPropertiesSpy).toHaveLastReturnedWith({
-            pageName: "Test-path",
+            pageName: "Test Path",
             name: "John Doe",
             property_2: "property"
         });
@@ -298,7 +298,7 @@ describe("FullStoryProvider: Url Configure", () => {
         );
 
         expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?user-property-1=property", ["url"], {});
-        expect(getPropertiesSpy).toHaveLastReturnedWith({ pageName: "Test-path", user_property_1: "property" });
+        expect(getPropertiesSpy).toHaveLastReturnedWith({ pageName: "Test Path", user_property_1: "property" });
     });
 
     // SET SEARCH PROPS
@@ -313,12 +313,12 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(setPageSpy).toHaveBeenCalledWith({ pageName: "Test-path" });
+        expect(setPageSpy).toHaveBeenCalledWith({ pageName: "Test Path" });
 
         expect(FullStory).toHaveBeenCalledWith("setProperties", {
             type: "page",
             properties: {
-                pageName: "Test-path"
+                pageName: "Test Path"
             }
         });
     });
@@ -337,12 +337,12 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(setPageSpy).toHaveBeenCalledWith({ pageName: "Test-path", property_1: 1, property_2: "property" });
+        expect(setPageSpy).toHaveBeenCalledWith({ pageName: "Test Path", property_1: 1, property_2: "property" });
 
         expect(FullStory).toHaveBeenCalledWith("setProperties", {
             type: "page",
             properties: {
-                pageName: "Test-path",
+                pageName: "Test Path",
                 property_1: 1,
                 property_2: "property"
             }
@@ -397,7 +397,7 @@ describe("FullStoryProvider: Schema Configure", () => {
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
         expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema"], {});
-        expect(getPageNameSpy).toHaveReturnedWith("Test-path");
+        expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
     it("returns correct properties", () => {
@@ -417,7 +417,7 @@ describe("FullStoryProvider: Schema Configure", () => {
         expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {});
         expect(getSearchProperties).toHaveReturnedWith({
             "organization_name": "Best Buy",
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
@@ -563,7 +563,7 @@ describe("FullStoryProvider: Meta Configure", () => {
         expect(getSearchProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
         expect(getSearchProperties).toHaveReturnedWith({
             person_name: "rich",
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             property_2: 2,
             viewport: "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
@@ -625,7 +625,47 @@ describe("FullStoryProvider: Auto Configure", () => {
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
         expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["all"], {});
-        expect(getPageNameSpy).toHaveReturnedWith("Test-path");
+        expect(getPageNameSpy).toHaveReturnedWith("Test Path");
+    });
+
+    it("returns correct pagname when path has an id", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path/product/1234");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path/product/1234"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/test-path/product/:id" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(screen.getByText("Test Component"));
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path/product/1234", ["all"], {});
+        expect(getPageNameSpy).toHaveReturnedWith("Test Path / Product / 1234");
+    });
+
+    it("returns correct page name when path is /", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/");
+
+        render(
+            <MemoryRouter initialEntries={["/"]}>
+                <FullStoryProvider>
+                    <Routes>
+                        <Route path="/" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(screen.getByText("Test Component"));
+        expect(getPageNameSpy).toHaveBeenCalledWith("/", ["all"], {});
+        expect(getPageNameSpy).toHaveReturnedWith("Home Page");
     });
 
     it("returns correct properties", () => {
@@ -651,7 +691,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             "property_1": "one",
             "property_2": 2,
             "organization_name": "Best Buy",
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
@@ -686,7 +726,7 @@ describe("FullStoryProvider: Auto Configure", () => {
             "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
             "property_2": 2,
             "organization_name": "Best Buy",
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
@@ -747,7 +787,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
         expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema", "url"], {});
-        expect(getPageNameSpy).toHaveReturnedWith("Test-path");
+        expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
     it("returns correct properties", () => {
@@ -774,7 +814,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
             "property_1": "one",
             "property_2": 2,
             "organization_name": "Best Buy",
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
@@ -810,7 +850,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
         expect(getSearchProperties).toHaveReturnedWith({
             "property_2": 2,
             "organization_name": "Best Buy",
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
@@ -871,7 +911,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
         expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema", "url"], { "test-path": ["url"] });
-        expect(getPageNameSpy).toHaveReturnedWith("Test-path");
+        expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
     it("returns correct properties", () => {
@@ -895,7 +935,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
             { "test-path": ["url"] }
         );
         expect(getSearchProperties).toHaveReturnedWith({
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             "property_1": "one",
             "property_2": 2
         });
@@ -921,7 +961,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
         expect(getSearchProperties).toHaveReturnedWith({
             "property_2": 2,
             "organization_name": "Best Buy",
-            "pageName": "Test-path",
+            "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
