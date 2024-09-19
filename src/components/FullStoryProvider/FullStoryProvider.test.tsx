@@ -1,12 +1,11 @@
 import React from "react";
-import { render, screen, act } from "@testing-library/react";
-import { Routes, Route } from "react-router-dom";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { MemoryRouter } from "react-router"; // MemoryRouter is useful for testing
-import FullStoryProvider from "./FullStoryProvider";
+import FullStoryProvider, { useFSNavigate } from "./FullStoryProvider";
 import * as FS from "../../utils/fullstory";
 import * as Helpers from "../../utils/helpers";
 import { FullStory, init } from "@fullstory/browser";
-import { FullStoryContext } from "./FullStoryContext";
 import { Schema } from "./types";
 
 jest.mock("@fullstory/browser", () => ({
@@ -23,57 +22,116 @@ jest.mock("@fullstory/browser", () => ({
     })
 }));
 
-describe("FullStoryProvider: useFSNavigate", () => {
-    const TestComponent = () => {
-        const { useFSNavigate } = React.useContext(FullStoryContext);
-
-        // Simulate calling useFSNavigate on mount
-        React.useEffect(() => {
-            act(() => {
-                useFSNavigate("/new-path", "Custom Page Name", { prop1: "value1" });
-            });
-        }, [useFSNavigate]);
-
-        return null; // This component doesn't need to render anything
-    };
-
-    const NewComponent = () => <div>New Component</div>;
-
+describe.only("FullStoryProvider: useFSNavigate", () => {
     const setPageSpy = jest.spyOn(FS, "setPage");
+    const getProperties = jest.spyOn(Helpers, "getProperties");
 
-    beforeAll(() => {
-        // Store the original function in case you need to restore it later
-        //@ts-ignore
-        global.originalWindowLocation = window.location;
-        //@ts-ignore
-        delete window.location;
-        window.location = {
-            //@ts-ignore
-            ...global.originalWindowLocation,
-            assign: jest.fn()
+    beforeEach(() => {
+        document.head.innerHTML = `
+        <script type="application/ld+json">
+                 {
+            "@context": "http:\u002F\u002Fschema.org\u002F",
+            "@type": "Review",
+            "itemReviewed": {
+                "@type": "Product",
+                "name": "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight"
+            },
+            "name": "Unmatched Performance: A Review of My New Laptop",
+            "author": { "@type": "Person", "name": "richlook" },
+             "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": "5" },
+            "publisher": { "@type": "Organization", "name": "Best Buy" }
+        }
+        </script>
+      `;
+
+        const DocumentsButton = () => {
+            const nav = useFSNavigate();
+            return (
+                <button
+                    data-testid="button"
+                    onClick={() => nav("/documents?user_id=123", "Documents", { prop1: "value1" })}
+                >
+                    Button
+                </button>
+            );
         };
-    });
 
-    afterAll(() => {
-        // Restore the original function
-        //@ts-ignore
-        window.location = global.originalWindowLocation;
-    });
+        const TestComponent = () => {
+            return <DocumentsButton />;
+        };
 
-    it("can navigate using useFSNavigate within a BrowserRouter", () => {
+        const NewComponent = () => {
+            const nav = useNavigate();
+            return (
+                <button data-testid="button" onClick={() => nav("/")}>
+                    Button
+                </button>
+            );
+        };
+
+        // setup
         render(
-            <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider>
+            <MemoryRouter initialIndex={0} initialEntries={["/"]}>
+                <FullStoryProvider rules={{ documents: ["url"] }}>
                     <Routes>
-                        <Route path="/test-path" element={<TestComponent />} />
-                        <Route path="/new-path" element={<NewComponent />} />
+                        <Route path="/" element={<TestComponent />} />
+                        <Route path="/documents" element={<NewComponent />} />
                     </Routes>
                 </FullStoryProvider>
             </MemoryRouter>
         );
+    });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it("can navigate using useFSNavigate within a BrowserRouter", () => {
         // Assert that setPage was called with the correct arguments
-        expect(setPageSpy).toHaveBeenCalledWith({ "pageName": "Custom Page Name", "prop1": "value1" });
+        expect(getProperties).toHaveReturnedWith({
+            "organization_name": "Best Buy",
+            "pageName": "Home Page",
+            "person_name": "richlook",
+            "product_name":
+                "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "rating_bestrating": "5",
+            "rating_ratingvalue": 5,
+            "review_context": "http://schema.org/",
+            "review_name": "Unmatched Performance: A Review of My New Laptop"
+        });
+        expect(setPageSpy).toHaveBeenCalledWith({
+            "pageName": "Home Page",
+            "review_context": "http:\u002F\u002Fschema.org\u002F",
+            "product_name":
+                "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "review_name": "Unmatched Performance: A Review of My New Laptop",
+            "person_name": "richlook",
+            "rating_ratingvalue": 5,
+            "rating_bestrating": "5",
+            "organization_name": "Best Buy"
+        });
+    });
+
+    it("returns correct properties when rule is attached", () => {
+        fireEvent.click(screen.getByRole("button"));
+
+        expect(setPageSpy).toHaveBeenLastCalledWith({ user_id: 123, prop1: "value1", pageName: "Documents" });
+    });
+
+    it("returns correct properties after ref is changed to true in useFSNavigate", () => {
+        fireEvent.click(screen.getByRole("button"));
+
+        expect(setPageSpy).toHaveBeenCalledWith({
+            "organization_name": "Best Buy",
+            "pageName": "Home Page",
+            "person_name": "richlook",
+            "product_name":
+                "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "rating_bestrating": "5",
+            "rating_ratingvalue": 5,
+            "review_context": "http://schema.org/",
+            "review_name": "Unmatched Performance: A Review of My New Laptop"
+        });
     });
 });
 
@@ -881,25 +939,24 @@ describe("FullStoryProvider: Path Rule Configure", () => {
 
     it("returns correct properties when default is all", () => {
         //@ts-ignore
-        window.location = new URL("http://example.com/test-path?property_1=one&property_2=2");
+        window.location = new URL("http://example.com/documents?user_id=90867");
 
         render(
-            <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
-                <FullStoryProvider rules={{ "test-path": ["url"] }}>
+            <MemoryRouter initialEntries={["/documents?user_id=90867"]}>
+                <FullStoryProvider rules={{ "documents": ["url"] }}>
                     <Routes>
-                        <Route path="/test-path" element={<TestComponent />} />
+                        <Route path="/documents" element={<TestComponent />} />
                     </Routes>
                 </FullStoryProvider>
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "meta"], {
-            "test-path": ["url"]
+        expect(getProperties).toHaveBeenCalledWith("/documents", "?user_id=90867", ["all"], {
+            "documents": ["url"]
         });
         expect(getProperties).toHaveReturnedWith({
-            "pageName": "Test Path",
-            "property_1": "one",
-            "property_2": 2
+            "pageName": "Documents",
+            "user_id": 90867
         });
     });
 

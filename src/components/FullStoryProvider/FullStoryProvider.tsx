@@ -4,6 +4,7 @@ import { setPage } from "../../utils/fullstory";
 import { combineObjects, getPageName, getProperties } from "../../utils/helpers";
 import { FullStoryProviderProps } from "./types";
 import { useLocation, useNavigate } from "react-router-dom";
+
 export const useFSNavigate = () => {
     const context = useContext(FullStoryContext);
 
@@ -16,41 +17,64 @@ export const useFSNavigate = () => {
 
 export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, capture = ["all"], rules = {} }) => {
     const navigationTriggeredRef = useRef<boolean>(false);
+    const pageNameRef = useRef<string>("");
+    const propertiesRef = useRef<{ [v: string]: string }>({});
+
     const location = useLocation();
     const nav = useNavigate();
 
-    const useFSNavigate = useCallback(
-        (to: string, pageName?: string, properties?: any) => {
-            // Navigate the user
-            nav(to);
+    function CustomNavigate() {
+        // Grab location
+        const { search, pathname } = location;
 
-            // If a custom pageName is provided, use it, otherwise derive from 'to'
-            const name = pageName || getPageName(to, capture, rules);
+        // If a custom pageName is provided, use it, otherwise derive from 'pathname'
+        const name = pageNameRef.current || getPageName(pathname, capture, rules);
 
-            // Set the properties if provided, otherwise an empty object
-            const { search } = window.location;
-            const defaultProperties = getProperties(to, search, capture, rules);
+        // Pull properties from property ref
+        const properties = propertiesRef.current;
 
-            // check if pagename was defined in the properties
-            if (!properties.pageName) {
-                // add pageName to properties if not defined
-                properties.pageName = name;
-            }
+        // Find the default properties according to capture rules
+        const defaultProperties = getProperties(pathname, search, capture, rules);
 
-            // combine default captured properties and useNav properties
-            const props = combineObjects(defaultProperties, properties);
+        // check if pagename was defined in the properties
+        if (!properties.pageName) {
+            // add pageName to properties if not defined
+            properties["pageName"] = name;
+        }
 
-            // Indicate that navigation was triggered via useFSNavigate
-            navigationTriggeredRef.current = true;
+        // combine default captured properties and useNav properties
+        const props = combineObjects(defaultProperties, properties);
 
-            setPage(props);
-        },
-        [capture, rules]
-    );
+        // set page properties
+        setPage(props);
+
+        // Set the ref back to default
+        pageNameRef.current = "";
+
+        // Set the ref back to default
+        propertiesRef.current = {};
+    }
+
+    const useFSNavigate = useCallback((to: string, pageName?: string, properties?: any) => {
+        // Indicate that navigation was triggered via useFSNavigate
+        navigationTriggeredRef.current = true;
+
+        // Set pageName
+        pageNameRef.current = pageName as string;
+
+        // Set properties
+        propertiesRef.current = properties;
+
+        // Navigate the user
+        nav(to);
+    }, []);
 
     const handleLocationChange = () => {
         // Check if the navigation was triggered by useFSNavigate
         if (navigationTriggeredRef.current) {
+            // Run custom navigate
+            CustomNavigate();
+
             // Reset the ref for the next navigation event
             navigationTriggeredRef.current = false;
             return;
