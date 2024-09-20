@@ -22,9 +22,9 @@ jest.mock("@fullstory/browser", () => ({
     })
 }));
 
-describe.only("FullStoryProvider: useFSNavigate", () => {
+describe("FullStoryProvider: useFSNavigate", () => {
     const setPageSpy = jest.spyOn(FS, "setPage");
-    const getProperties = jest.spyOn(Helpers, "getProperties");
+    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
 
     beforeEach(() => {
         document.head.innerHTML = `
@@ -88,10 +88,10 @@ describe.only("FullStoryProvider: useFSNavigate", () => {
 
     it("can navigate using useFSNavigate within a BrowserRouter", () => {
         // Assert that setPage was called with the correct arguments
-        expect(getProperties).toHaveReturnedWith({
+        expect(getPageProperties).toHaveReturnedWith({
             "organization_name": "Best Buy",
-            "pageName": "Home Page",
             "person_name": "richlook",
+            "pageName": "Home Page",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
             "rating_bestrating": "5",
@@ -139,13 +139,17 @@ describe("FullStoryProvider: Url Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
     const getNameSpy = jest.spyOn(Helpers, "getPageName");
-    const getPropertiesSpy = jest.spyOn(Helpers, "getProperties");
+    const getPagePropertiesSpy = jest.spyOn(Helpers, "getPageProperties");
     const setPageSpy = jest.spyOn(FS, "setPage");
 
     beforeAll(() => {
         init({ orgId: "123" });
         //@ts-ignore
         delete window.location;
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     it("renders with FSProvider", () => {
@@ -180,7 +184,7 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path", ["url"], {});
+        expect(getNameSpy).toHaveBeenCalledWith("/test-path", ["url"], {}, "");
         expect(getNameSpy).toHaveLastReturnedWith("Test Path");
     });
 
@@ -198,7 +202,7 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu", ["url"], {});
+        expect(getNameSpy).toHaveBeenCalledWith("/test-path/menu", ["url"], {}, "");
         expect(getNameSpy).toHaveLastReturnedWith("Test Path / Menu");
     });
 
@@ -233,7 +237,7 @@ describe("FullStoryProvider: Url Configure", () => {
     });
 
     // GET SEARCH PROPS
-    it("getProperties returns properties from search", () => {
+    it("getPageProperties returns properties from search", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path?property-1=1&property-2=property");
 
@@ -247,15 +251,21 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?property-1=1&property-2=property", ["url"], {});
-        expect(getPropertiesSpy).toHaveLastReturnedWith({
-            pageName: "Test Path",
+        expect(getPagePropertiesSpy).toHaveBeenCalledWith(
+            "/test-path",
+            "?property-1=1&property-2=property",
+            ["url"],
+            {},
+            {}
+        );
+        expect(getPagePropertiesSpy).toHaveLastReturnedWith({
+            "pageName": "Test Path",
             property_1: 1,
             property_2: "property"
         });
     });
 
-    it("getProperties returns object when search is empty", () => {
+    it("getPageProperties returns object when search is empty", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path");
 
@@ -269,11 +279,11 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "", ["url"], {});
-        expect(getPropertiesSpy).toHaveLastReturnedWith({ "pageName": "Test Path" });
+        expect(getPagePropertiesSpy).toHaveBeenCalledWith("/test-path", "", ["url"], {}, {});
+        expect(getPagePropertiesSpy).toHaveLastReturnedWith({ "pageName": "Test Path" });
     });
 
-    it("getProperties gets property with space delimeter", () => {
+    it("getPageProperties gets property with space delimeter", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path?name=John%20Doe&property-2=property");
 
@@ -287,20 +297,21 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith(
+        expect(getPagePropertiesSpy).toHaveBeenCalledWith(
             "/test-path",
             "?name=John%20Doe&property-2=property",
             ["url"],
+            {},
             {}
         );
-        expect(getPropertiesSpy).toHaveLastReturnedWith({
-            pageName: "Test Path",
+        expect(getPagePropertiesSpy).toHaveLastReturnedWith({
             name: "John Doe",
+            "pageName": "Test Path",
             property_2: "property"
         });
     });
 
-    it("getProperties gets property with multiple - ", () => {
+    it("getPageProperties gets property with multiple - ", () => {
         //@ts-ignore
         window.location = new URL("http://example.com/test-path?user-property-1=property");
 
@@ -314,8 +325,8 @@ describe("FullStoryProvider: Url Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getPropertiesSpy).toHaveBeenCalledWith("/test-path", "?user-property-1=property", ["url"], {});
-        expect(getPropertiesSpy).toHaveLastReturnedWith({ pageName: "Test Path", user_property_1: "property" });
+        expect(getPagePropertiesSpy).toHaveBeenCalledWith("/test-path", "?user-property-1=property", ["url"], {}, {});
+        expect(getPagePropertiesSpy).toHaveLastReturnedWith({ "pageName": "Test Path", user_property_1: "property" });
     });
 
     // SET SEARCH PROPS
@@ -394,7 +405,7 @@ describe("FullStoryProvider: Schema Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getProperties = jest.spyOn(Helpers, "getProperties");
+    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -413,7 +424,7 @@ describe("FullStoryProvider: Schema Configure", () => {
 
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema"], {});
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema"], {}, "");
         expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
@@ -431,10 +442,10 @@ describe("FullStoryProvider: Schema Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {});
-        expect(getProperties).toHaveReturnedWith({
-            "organization_name": "Best Buy",
+        expect(getPageProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {}, {});
+        expect(getPageProperties).toHaveReturnedWith({
             "pageName": "Test Path",
+            "organization_name": "Best Buy",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
@@ -463,8 +474,12 @@ describe("FullStoryProvider: Meta Configure", () => {
       `;
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     const TestComponent = () => <div>Test Component</div>;
-    const getProperties = jest.spyOn(Helpers, "getProperties");
+    const getPagePropertiesSpy = jest.spyOn(Helpers, "getPageProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -482,7 +497,7 @@ describe("FullStoryProvider: Meta Configure", () => {
         );
 
         // Check if the route is rendered correctly with TestComponent
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["meta"], {});
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["meta"], {}, "");
         expect(getPageNameSpy).toHaveReturnedWith("Bathroom vanity at Lowes.com: Search Results");
     });
 
@@ -501,8 +516,8 @@ describe("FullStoryProvider: Meta Configure", () => {
         );
 
         // Check if the route is rendered correctly with TestComponent
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "", ["meta"], {});
-        expect(getProperties).toHaveReturnedWith({
+        expect(getPagePropertiesSpy).toHaveBeenCalledWith("/test-path", "", ["meta"], {}, {});
+        expect(getPagePropertiesSpy).toHaveReturnedWith({
             "content_type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
@@ -525,10 +540,16 @@ describe("FullStoryProvider: Meta Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
-        expect(getProperties).toHaveReturnedWith({
+        expect(getPagePropertiesSpy).toHaveBeenCalledWith(
+            "/test-path",
+            "?person_name=rich&property_2=2",
+            ["all"],
+            {},
+            {}
+        );
+        expect(getPagePropertiesSpy).toHaveReturnedWith({
+            pageName: "Test Path",
             person_name: "rich",
-            "pageName": "Test Path",
             property_2: 2,
             viewport: "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
@@ -569,8 +590,12 @@ describe("FullStoryProvider: Auto Configure", () => {
       `;
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     const TestComponent = () => <div>Test Component</div>;
-    const getProperties = jest.spyOn(Helpers, "getProperties");
+    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -589,7 +614,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["all"], {});
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["all"], {}, "");
         expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
@@ -609,7 +634,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path/product/1234", ["all"], {});
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path/product/1234", ["all"], {}, "");
         expect(getPageNameSpy).toHaveReturnedWith("Test Path / Product / 1234");
     });
 
@@ -629,7 +654,7 @@ describe("FullStoryProvider: Auto Configure", () => {
 
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
-        expect(getPageNameSpy).toHaveBeenCalledWith("/", ["all"], {});
+        expect(getPageNameSpy).toHaveBeenCalledWith("/", ["all"], {}, "");
         expect(getPageNameSpy).toHaveReturnedWith("Home Page");
     });
 
@@ -647,25 +672,25 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {});
-        expect(getProperties).toHaveReturnedWith({
+        expect(getPageProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {}, {});
+        expect(getPageProperties).toHaveReturnedWith({
             "content_type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
-            "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
-            "property_1": "one",
-            "property_2": 2,
             "organization_name": "Best Buy",
             "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "property_1": "one",
+            "property_2": 2,
             "rating_bestrating": "5",
             "rating_ratingvalue": 5,
             "review_context": "http://schema.org/",
             "review_name": "Unmatched Performance: A Review of My New Laptop",
             "review_reviewbody":
-                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play."
+                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play.",
+            "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0"
         });
     });
 
@@ -683,24 +708,24 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {});
-        expect(getProperties).toHaveReturnedWith({
+        expect(getPageProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {}, {});
+        expect(getPageProperties).toHaveReturnedWith({
             "content_type": "text/html; charset=UTF-8",
             "og:title": "Bathroom vanity at Lowes.com: Search Results",
             "og:type": "website",
-            "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0",
-            "property_2": 2,
             "organization_name": "Best Buy",
             "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "property_2": 2,
             "rating_bestrating": "5",
             "rating_ratingvalue": 5,
             "review_context": "http://schema.org/",
             "review_name": "Unmatched Performance: A Review of My New Laptop",
             "review_reviewbody":
-                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play."
+                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play.",
+            "viewport": "width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0"
         });
     });
 
@@ -724,8 +749,8 @@ describe("FullStoryProvider: Auto Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {});
-        expect(getProperties).toHaveReturnedWith({
+        expect(getPageProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["all"], {}, {});
+        expect(getPageProperties).toHaveReturnedWith({
             "bankaccount_feesandcommissionsspecification":
                 "http://personal.rbs.co.uk/content/dam/rbs_co_uk/currentaccounts/downloads/Reward/Personal%20and%20Private%20Current%20Account%20Fees%20and%20Interest%20Rates.pdf",
             "bankaccount_name": "Select Platinum account",
@@ -741,6 +766,165 @@ describe("FullStoryProvider: Auto Configure", () => {
             "quantitativevalue_unitcode": "ANN",
             "quantitativevalue_value": "1"
         });
+    });
+});
+
+describe("FullStoryProvider: None Configure", () => {
+    beforeAll(() => {
+        init({ orgId: "123" });
+        //@ts-ignore
+        delete window.location;
+
+        document.head.innerHTML = `
+          <title>Bathroom vanity at Lowes.com: Search Results</title>
+       <meta name="viewport" content="width=device-width, user-scalable=yes, minimum-scale=1.0,maximum-scale=5.0,initial-scale=1.0">
+       <meta property="og:title" content="Bathroom vanity at Lowes.com: Search Results">
+       <meta property="og:type" content="website">
+       <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script type="application/ld+json">
+                 {
+            "@context": "http:\u002F\u002Fschema.org\u002F",
+            "@type": "Review",
+            "itemReviewed": {
+                "@type": "Product",
+                "name": "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight"
+            },
+            "name": "Unmatched Performance: A Review of My New Laptop",
+            "author": { "@type": "Person", "name": "richlook" },
+            "reviewBody":
+                "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.\n\nIn terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.\n\nOverall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play.",
+            "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": "5" },
+            "publisher": { "@type": "Organization", "name": "Best Buy" }
+        }
+        </script>
+      `;
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    const TestComponent = () => <div>Test Component</div>;
+    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
+    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+    const setPageSpy = jest.spyOn(FS, "setPage");
+
+    it("returns no page name", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider capture={["none"]}>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["none"], {}, "");
+        expect(getPageNameSpy).toHaveReturnedWith("");
+    });
+
+    it("returns no properties", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path/product/1234");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path/product/1234"]}>
+                <FullStoryProvider capture={["none"]}>
+                    <Routes>
+                        <Route path="/test-path/product/:id" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(screen.getByText("Test Component"));
+        expect(getPageProperties).toHaveBeenCalledWith("/test-path/product/1234", "", ["none"], {}, {});
+        expect(getPageProperties).toHaveReturnedWith({});
+        expect(setPageSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it("returns no pageName on specific page", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/documents");
+
+        render(
+            <MemoryRouter initialEntries={["/documents"]}>
+                <FullStoryProvider rules={{ "documents": ["none"] }}>
+                    <Routes>
+                        <Route path="/documents" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(getPageNameSpy).toHaveBeenCalledWith("/documents", ["all"], { "documents": ["none"] }, "");
+        expect(getPageNameSpy).toHaveReturnedWith("");
+    });
+
+    it("returns no properties on specific page", () => {
+        //@ts-ignore
+        window.location = new URL("http://example.com/documents");
+
+        render(
+            <MemoryRouter initialEntries={["/documents"]}>
+                <FullStoryProvider rules={{ "documents": ["none"] }}>
+                    <Routes>
+                        <Route path="/documents" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        // Check if the route is rendered correctly with TestComponent
+        expect(getPageProperties).toHaveBeenCalledWith("/documents", "", ["all"], { "documents": ["none"] }, {});
+        expect(getPageProperties).toHaveReturnedWith({});
+    });
+
+    it("returns no properties on FSUseNavigate", () => {
+        const TestComponent = () => {
+            const nav = useFSNavigate();
+            return (
+                <button
+                    data-testid="button"
+                    onClick={() => nav("/documents?user_id=123", "Documents", { prop1: "value1" })}
+                >
+                    Button
+                </button>
+            );
+        };
+
+        const NewComponent = () => {
+            const nav = useNavigate();
+            return (
+                <button data-testid="button" onClick={() => nav("/")}>
+                    Button
+                </button>
+            );
+        };
+
+        // setup
+        render(
+            <MemoryRouter initialIndex={0} initialEntries={["/"]}>
+                <FullStoryProvider rules={{ documents: ["none"] }}>
+                    <Routes>
+                        <Route path="/" element={<TestComponent />} />
+                        <Route path="/documents" element={<NewComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        fireEvent.click(screen.getByRole("button"));
+
+        expect(getPageProperties).toHaveLastReturnedWith({});
+        expect(setPageSpy).toHaveBeenCalledTimes(1);
     });
 });
 
@@ -770,8 +954,12 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
       `;
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     const TestComponent = () => <div>Test Component</div>;
-    const getProperties = jest.spyOn(Helpers, "getProperties");
+    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -790,7 +978,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
 
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema", "url"], {});
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema", "url"], {}, "");
         expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
@@ -808,15 +996,21 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "url"], {});
-        expect(getProperties).toHaveReturnedWith({
-            "property_1": "one",
-            "property_2": 2,
+        expect(getPageProperties).toHaveBeenCalledWith(
+            "/test-path",
+            "?property_1=one&property_2=2",
+            ["schema", "url"],
+            {},
+            {}
+        );
+        expect(getPageProperties).toHaveReturnedWith({
             "organization_name": "Best Buy",
             "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "property_1": "one",
+            "property_2": 2,
             "rating_bestrating": "5",
             "rating_ratingvalue": 5,
             "review_context": "http://schema.org/",
@@ -840,19 +1034,20 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith(
+        expect(getPageProperties).toHaveBeenCalledWith(
             "/test-path",
             "?person_name=rich&property_2=2",
             ["schema", "url"],
+            {},
             {}
         );
-        expect(getProperties).toHaveReturnedWith({
-            "property_2": 2,
+        expect(getPageProperties).toHaveReturnedWith({
             "organization_name": "Best Buy",
             "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "property_2": 2,
             "rating_bestrating": "5",
             "rating_ratingvalue": 5,
             "review_context": "http://schema.org/",
@@ -890,7 +1085,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getProperties = jest.spyOn(Helpers, "getProperties");
+    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
@@ -909,7 +1104,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
 
         // Check if the route is rendered correctly with TestComponent
         expect(screen.getByText("Test Component"));
-        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema", "url"], { "test-path": ["url"] });
+        expect(getPageNameSpy).toHaveBeenCalledWith("/test-path", ["schema", "url"], { "test-path": ["url"] }, "");
         expect(getPageNameSpy).toHaveReturnedWith("Test Path");
     });
 
@@ -927,14 +1122,16 @@ describe("FullStoryProvider: Path Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?property_1=one&property_2=2", ["schema", "meta"], {
-            "test-path": ["url"]
-        });
-        expect(getProperties).toHaveReturnedWith({
-            "pageName": "Test Path",
-            "property_1": "one",
-            "property_2": 2
-        });
+        expect(getPageProperties).toHaveBeenCalledWith(
+            "/test-path",
+            "?property_1=one&property_2=2",
+            ["schema", "meta"],
+            {
+                "test-path": ["url"]
+            },
+            {}
+        );
+        expect(getPageProperties).toHaveReturnedWith({ "pageName": "Test Path", "property_1": "one", "property_2": 2 });
     });
 
     it("returns correct properties when default is all", () => {
@@ -951,13 +1148,16 @@ describe("FullStoryProvider: Path Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/documents", "?user_id=90867", ["all"], {
-            "documents": ["url"]
-        });
-        expect(getProperties).toHaveReturnedWith({
-            "pageName": "Documents",
-            "user_id": 90867
-        });
+        expect(getPageProperties).toHaveBeenCalledWith(
+            "/documents",
+            "?user_id=90867",
+            ["all"],
+            {
+                "documents": ["url"]
+            },
+            {}
+        );
+        expect(getPageProperties).toHaveReturnedWith({ "pageName": "Documents", "user_id": 90867 });
     });
 
     it("returns correct properties when some values match", () => {
@@ -974,16 +1174,22 @@ describe("FullStoryProvider: Path Rule Configure", () => {
             </MemoryRouter>
         );
 
-        expect(getProperties).toHaveBeenCalledWith("/test-path", "?person_name=rich&property_2=2", ["all"], {
-            "test-path": ["schema", "url"]
-        });
-        expect(getProperties).toHaveReturnedWith({
-            "property_2": 2,
+        expect(getPageProperties).toHaveBeenCalledWith(
+            "/test-path",
+            "?person_name=rich&property_2=2",
+            ["all"],
+            {
+                "test-path": ["schema", "url"]
+            },
+            {}
+        );
+        expect(getPageProperties).toHaveReturnedWith({
             "organization_name": "Best Buy",
             "pageName": "Test Path",
             "person_name": "richlook",
             "product_name":
                 "Apple - MacBook Air 13-inch Laptop - M3 chip Built for Apple Intelligence - 8GB Memory -  256GB SSD - Midnight",
+            "property_2": 2,
             "rating_bestrating": "5",
             "rating_ratingvalue": 5,
             "review_context": "http://schema.org/",

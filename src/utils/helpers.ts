@@ -244,11 +244,11 @@ export function combineObjects(obj1: { [v: string]: string }, obj2: { [v: string
     return obj;
 }
 
-export function getPageName(path: string, capture: CaptureOptions, rules: CaptureRules): string {
-    // remove leading slash from path
-    const pathName = path.replace("/", "");
+export function getPageName(path: string, capture: CaptureOptions, rules: CaptureRules, current: string): string {
+    // Remove leading /
+    const pathName = path === "/" ? path : path.replace("/", "");
 
-    // find rules we are capturing
+    // Find capture rules
     const captureRules = !!rules[pathName] ? rules[pathName] : capture;
 
     // if rule is none return
@@ -257,14 +257,20 @@ export function getPageName(path: string, capture: CaptureOptions, rules: Captur
     }
 
     // check defualt capture for meta
-    const pagename = captureRules.includes("meta") ? document.title : getUrlPathName(path);
+    const pagename = !!current ? current : captureRules.includes("meta") ? document.title : getUrlPathName(path);
 
     return pagename;
 }
 
-export function getProperties(path: string, search: string, capture: CaptureOptions, rules: CaptureRules): any {
-    // remove leading slash from path
-    const pathName = path.replace("/", "");
+export function getPageProperties(
+    path: string,
+    search: string,
+    capture: CaptureOptions,
+    rules: CaptureRules,
+    current: any
+): any {
+    // Remove leading /
+    const pathName = path === "/" ? path : path.replace("/", "");
 
     // if path is in the rules we use those rules
     const captureRules = !!rules[pathName] ? rules[pathName] : capture;
@@ -302,5 +308,7 @@ export function getProperties(path: string, search: string, capture: CaptureOpti
         Object.keys(props).map(x => (properties[x] = !properties[x] ? props[x] : properties[x]));
     }
 
-    return properties;
+    const props = combineObjects(current, properties);
+
+    return props;
 }
