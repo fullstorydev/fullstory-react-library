@@ -404,6 +404,10 @@ describe("FullStoryProvider: Schema Configure", () => {
       `;
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     const TestComponent = () => <div>Test Component</div>;
     const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
     const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
@@ -455,6 +459,57 @@ describe("FullStoryProvider: Schema Configure", () => {
             "review_name": "Unmatched Performance: A Review of My New Laptop",
             "review_reviewbody":
                 "I recently purchased a new laptop for my household, and I have been extremely impressed with its performance. The laptop is perfect for both work and entertainment purposes, and it has become an essential part of our daily routine. The sleek design and powerful specifications make it a great addition to our home office setup.  In terms of performance, this laptop really stands out. It boots up quickly, and I haven't experienced any lag or slowdown, even when running multiple applications simultaneously. The battery life is also impressive, allowing me to work for extended periods without having to constantly search for a power outlet.  Overall, I couldn't be happier with my new laptop. It has exceeded my expectations in every way and has become an indispensable tool for both work and play."
+        });
+    });
+
+    it("returns correct propertis when schema contains string[]", () => {
+        document.head.innerHTML = `
+        <script type="application/ld+json">
+                {
+            "@context": "https://schema.org",
+            "@type": "FinancialService",
+            "name": "Wells Cargo",
+            "knowsAbout": ["Consumer Banking", "Property 2", "Property 3"],
+            "currenciesAccepted": "USD",
+            "openingHours": "Mo, Tu, We, Th, Fr, 9:00 - 17:00",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "123 Sesame St",
+                "addressLocality": "New York City",
+                "addressRegion": "NY",
+                "postalCode": "10001",
+                "addressCountry": "USA"
+            }
+        }
+        </script>
+      `;
+
+        //@ts-ignore
+        window.location = new URL("http://example.com/test-path");
+
+        render(
+            <MemoryRouter initialEntries={["/test-path"]}>
+                <FullStoryProvider capture={["schema"]}>
+                    <Routes>
+                        <Route path="/test-path" element={<TestComponent />} />
+                    </Routes>
+                </FullStoryProvider>
+            </MemoryRouter>
+        );
+
+        expect(getPageProperties).toHaveBeenCalledWith("/test-path", "", ["schema"], {}, {});
+        expect(getPageProperties).toHaveReturnedWith({
+            "financialservice_context": "https://schema.org",
+            "financialservice_currenciesaccepted": "USD",
+            "financialservice_knowsabout": "Consumer Banking, Property 2, Property 3",
+            "financialservice_name": "Wells Cargo",
+            "financialservice_openinghours": "Mo, Tu, We, Th, Fr, 9:00 - 17:00",
+            "pageName": "Test Path",
+            "postaladdress_addresscountry": "USA",
+            "postaladdress_addresslocality": "New York City",
+            "postaladdress_addressregion": "NY",
+            "postaladdress_postalcode": "10001",
+            "postaladdress_streetaddress": "123 Sesame St"
         });
     });
 });

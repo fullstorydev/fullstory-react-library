@@ -47,10 +47,15 @@ function getType(schema: Schema | SchemaType, defType: string): string {
     }
 }
 
-export function flattenArray(schemas: any[], properties: any): { [k: string]: any } {
+export function flattenArray(schemas: any[], properties: any, type: string): { [k: string]: any } {
     for (const schema of schemas) {
-        flattenSchema(schema, properties);
+        if (typeof schema === "string") {
+            properties[type] = properties[type] ? `${properties[type]}, ${schema}` : schema;
+        } else {
+            flattenSchema(schema, properties);
+        }
     }
+
     return properties;
 }
 
@@ -66,6 +71,12 @@ export function flattenSchema(
         // Capture the value of where we are in the object
         const val = schema[x];
 
+        // prepare key to be joined
+        const key = x.replace(/[^\w\s]/gi, "").toLocaleLowerCase();
+
+        // take the type and make new keyname
+        const keyName = type === "" ? key : `${type.toLowerCase()}_${key}`;
+
         // return if key is type or id
         if (x === "@type" || x === "@id") {
             return;
@@ -74,15 +85,9 @@ export function flattenSchema(
         // if the value is an object run this function and flatten that values
         if (typeof val === "object") {
             // determine if object is a list or not
-            Array.isArray(val) ? flattenArray(val, properties) : flattenSchema(val, properties, type);
+            Array.isArray(val) ? flattenArray(val, properties, keyName) : flattenSchema(val, properties, type);
             return;
         }
-
-        // prepare key to be joined
-        const key = x.replace(/[^\w\s]/gi, "").toLocaleLowerCase();
-
-        // take the type and make new keyname
-        const keyName = type === "" ? key : `${type.toLowerCase()}_${key}`;
 
         // apply the value to the newly named key
         properties[keyName] = !!properties[keyName] ? `${properties[keyName]} / ${val}` : val;
