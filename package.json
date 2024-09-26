@@ -1,6 +1,6 @@
 {
-    "name": "@bateman001/fs-react-component-library",
-    "version": "1.11.2",
+    "name": "fullstory-react-library",
+    "version": "1.0.0",
     "description": "This component library assists in fullstory set up for react apps",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
