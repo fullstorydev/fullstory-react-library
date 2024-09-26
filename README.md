@@ -4,7 +4,7 @@ This is a component library that encourages developers to build with components 
 
 ## Installation
 
-Run `npm install @bateman001/fs-react-component-library`
+Run `npm install @fullstory/fullstory-react-library`
 
 ## Page Names and Properties
 
@@ -17,7 +17,7 @@ The defualt configuration will capture all of the information in the url, meta t
 Wrap your Routes with `<FullStoryProvider>` like so
 
 ```
-import { FullStoryProvider } from "@bateman001/fs-react-component-library";
+import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
@@ -39,7 +39,7 @@ The url configuration will set page names and properties according to the url. I
 Add the capture rule of `url` to your `FullStoryProvider`.
 
 ```
-import { FullStoryProvider } from "@bateman001/fs-react-component-library";
+import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
@@ -61,7 +61,7 @@ The meta configuration will capture all of the information in the meta tags. It 
 Add the capture rule of `meta` to your `FullStoryProvider`.
 
 ```
-import { FullStoryProvider } from "@bateman001/fs-react-component-library";
+import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
@@ -84,7 +84,7 @@ The schema configuration will capture all of the information in the schemas on t
 Add the capture rule of `schema` to your `FullStoryProvider`.
 
 ```
-import { FullStoryProvider } from "@bateman001/fs-react-component-library";
+import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
@@ -107,7 +107,7 @@ Multi Capture Configuration will defualt capture information from certain aspect
 Add the capture rules you would like to your `FullStoryProvider`.
 
 ```
-import { FullStoryProvider } from "@bateman001/fs-react-component-library";
+import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
@@ -130,7 +130,7 @@ Additionally we can overried the default capture rules by add capture rules to c
 Add the capture rules by defining the page and the rule you expect to `FullStoryProvider`.
 
 ```
-import { FullStoryProvider } from "@bateman001/fs-react-component-library";
+import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
@@ -152,7 +152,7 @@ If you would like FullStory to capture custom pagenames and properties we can us
 **Implementation:**
 
 ```
-import { FullStoryProvider } from "@bateman001/fs-react-component-library";
+import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
@@ -168,7 +168,7 @@ const App = () => {
 Then we can use the hook anywhere within the provider like this:
 
 ```
-import { useFSNavigate } from "@bateman001/fs-react-component-library";
+import { useFSNavigate } from "@fullstory/fullstory-react-library";
 
 const Button = (props) => {
   const { property } = props
