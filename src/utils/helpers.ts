@@ -1,4 +1,13 @@
 import { CaptureOptions, CaptureRules, Schema, SchemaType } from "../components/FullStoryProvider/types";
+import {
+    FullStoryElementDataManyTypes,
+    FullStoryElementDataTypes,
+    ElementSchema,
+    ManyTypeMap,
+    SingleTypeMap,
+    FullStoryImage
+} from "./types";
+import { isDate } from "date-fns";
 
 function isNumber(value: any): boolean {
     return !isNaN(value);
@@ -234,6 +243,143 @@ function getAllProperties(search: string): any {
     return properties;
 }
 
+function getTypeOfObject(data: any): FullStoryElementDataManyTypes {
+    // create many type map
+    const typeMap: ManyTypeMap = {
+        "string": "strs",
+        "number": "reals",
+        "bigint": "ints",
+        "int": "ints",
+        "boolean": "bools"
+    };
+
+    // if data is an array proceed or else throw error
+    if (Array.isArray(data)) {
+        const type = typeof data[0];
+
+        // if Date return date
+        if (isDate(data[0])) {
+            return "dates";
+        } else if (type === "undefined" || type === "symbol" || type === "function" || type === "object") {
+            // if not fullstory type, throw error
+            throw Error(`Data type of ${type} is not allowed`);
+        } else {
+            // return type from the map
+            return typeMap[type];
+        }
+    } else {
+        throw Error(`Data type of object is not allowed`);
+    }
+}
+
+function getDataType(data: any): FullStoryElementDataTypes {
+    // if string is date return date
+    if (isDate(data)) {
+        return "date";
+    } else {
+        // create a map that matches js types to fullstory types
+        const typeMap: SingleTypeMap = {
+            "string": "str",
+            "number": "real",
+            "bigint": "int",
+            "int": "int",
+            "boolean": "bool"
+        };
+
+        // grab data type
+        const dataType = typeof data;
+
+        // if these data types throw error
+        if (dataType === "undefined" || dataType === "symbol" || dataType === "function") {
+            throw Error(`Data type of ${dataType} is not allowed`);
+        } else {
+            // create type
+            let type: FullStoryElementDataTypes;
+
+            // if type is object dig deeper
+            if (dataType === "object") {
+                type = getTypeOfObject(data);
+            } else {
+                // grab type from map
+                type = typeMap[dataType];
+            }
+
+            // return data type
+            return type;
+        }
+    }
+}
+
+export function seperateProps(data: any): any {
+    // grab keys
+    const keys = Object.keys(data);
+
+    // make data store
+    const elementData: any = {};
+
+    // loop through keys and find applicable data
+    for (const k of keys) {
+        // filter out key names of name and element data
+        if (k !== "name" && k !== "elementData") {
+            // apply custom props to store
+            elementData[k] = data[k];
+        }
+    }
+
+    // return custom props
+    return elementData;
+}
+
+export function createTimingName(data: FullStoryImage): string {
+    let name = "";
+
+    // if element is named use the name
+    if (data.name) {
+        // if element has a key include key in the name
+        name = data.key ? `fs-element-${data.name}-${data.key}` : `fs-element-${data.name}`;
+    } else {
+        // if no name use the data id and key if present
+        name = data.key ? `fs-element-${data.id}-${data.key}` : `fs-element-${data.id}`;
+    }
+
+    return name;
+}
+
+export function createElementData(
+    obj: any,
+    name: string = ""
+): { "data-fs-properties-schema": string; [v: string]: string } {
+    // Find all keys
+    const keys = Object.keys(obj);
+
+    // create store for schema
+    const schema: ElementSchema = { id: "str" };
+
+    // create story for element data
+    const elementData: { [v: string]: string } = name ? { "data-fs-element": name } : {};
+
+    // loop over all keys
+    for (const key of keys) {
+        // find the data type of the keys vaue
+        const type = getDataType(obj[key]);
+
+        // create a fs approved schema name
+        let k = `data-${key}`;
+
+        // insert data into schema
+        schema[k] = {
+            name: key,
+            type: type
+        };
+
+        // add to data element store
+        elementData[k] = Array.isArray(obj[key]) ? obj[key] : obj[key].toString();
+    }
+
+    // return schema and element data
+    return { ...elementData, "data-fs-properties-schema": JSON.stringify(schema) };
+}
+
 export function combineObjects(obj1: { [v: string]: string }, obj2: { [v: string]: string }): { [v: string]: string } {
     // create object store
     const obj: { [v: string]: string } = {};
@@ -246,6 +392,7 @@ export function combineObjects(obj1: { [v: string]: string }, obj2: { [v: string
         Object.keys(o).map(x => (obj[x] = !obj[x] ? o[x] : obj[x]));
     }
 
+    // return object
     return obj;
 }
 

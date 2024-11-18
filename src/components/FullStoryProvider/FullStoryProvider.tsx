@@ -1,17 +1,20 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
-import { combineObjects, getPageName, getPageProperties } from "../../utils/helpers";
+import { getPageName, getPageProperties } from "../../utils/helpers";
 import { FullStoryProviderProps } from "./types";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export const useFSNavigate = () => {
+    // grab context
     const context = useContext(FullStoryContext);
 
+    // if context is undefined throw error
     if (context === undefined) {
         throw new Error("useFSNavigate must be used within a FullStoryProvider");
     }
 
+    // return hook
     return context.useFSNavigate;
 };
 
@@ -86,6 +89,13 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
     useEffect(() => {
         handleLocationChange();
     }, [location, handleLocationChange]);
+
+    // this effect runs every render and sets timing info on element
+    useEffect(() => {
+        // get timing object
+        // cycle through all the times
+        // insert time results onto element via html injection (hard)
+    }, []);
 
     return <FullStoryContext.Provider value={{ useFSNavigate }}>{children}</FullStoryContext.Provider>;
 };

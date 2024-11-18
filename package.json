@@ -59,6 +59,7 @@
         "registry": "https://npm.pkg.github.com/bateman001"
     },
     "dependencies": {
-        "@fullstory/browser": "^2.0.5"
+        "@fullstory/browser": "^2.0.5",
+        "date-fns": "^4.1.0"
     }
 }
