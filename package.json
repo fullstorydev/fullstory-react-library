@@ -5,7 +5,8 @@
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
     "scripts": {
-        "rollup": "rollup -c",
+        "clean": "rm -rf dist types",
+        "build": "npm run clean && tsc && rollup -c",
         "test": "jest",
         "pub": "npm run rollup && npm publish",
         "storybook": "storybook dev -p 6006",
