@@ -5,7 +5,8 @@
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
     "scripts": {
-        "rollup": "rollup -c",
+        "clean": "rm -rf dist types",
+        "build": "npm run clean && tsc && rollup -c",
         "test": "jest",
         "pub": "npm run rollup && npm publish",
         "storybook": "storybook dev -p 6006",
@@ -40,7 +41,6 @@
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
         "rollup": "^4.21.0",
-        "rollup-plugin-dts": "^6.1.1",
         "rollup-plugin-peer-deps-external": "^2.2.4",
         "rollup-plugin-postcss": "^4.0.2",
         "storybook": "^8.2.9",
