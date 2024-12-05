@@ -1,0 +1,14 @@
+/src
+/dist
+/node_modules
+
+.gitignore
+.prettierrc
+.prettierrc.js
+.prettierrc.json
+babel.config.cjs
+jest.config.cjs
+package.lock.json
+README.md
+tsconfig.json
+rollup.config.json
