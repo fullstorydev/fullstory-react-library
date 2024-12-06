@@ -1,11 +1,45 @@
 version: 2.1
 
 orbs:
-    node: circleci/node@6.3
+  node: circleci/node@6.3
+
+jobs:
+  build-and-test:
+    executor:
+      name: node/default
+      tag: '16.13.0'
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Install
+          command: npm ci
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Audit
+          command: npm audit --audit-level=low
+      - run:
+          name: Test
+          command: npm test
+      - run:
+          name: Build
+          command: npm run build
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+
 
 workflows:
-    commit:
-        jobs:
-            - node/test:
-                  version: "20.18.1"
-                  test-results-for: jest
+  version: 2
+  build-deploy:
+    jobs:
+      - build-and-test:
+          filters:
+            branches:
+              ignore: main
