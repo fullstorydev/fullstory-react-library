@@ -72,7 +72,7 @@ describe("FullStoryProvider: useFSNavigate", () => {
         // setup
         render(
             <MemoryRouter initialIndex={0} initialEntries={["/"]}>
-                <FullStoryProvider rules={{ documents: ["url"] }}>
+                <FullStoryProvider pageCaptureRules={{ documents: ["url"] }}>
                     <Routes>
                         <Route path="/" element={<TestComponent />} />
                         <Route path="/documents" element={<NewComponent />} />
@@ -157,7 +157,7 @@ describe("FullStoryProvider: Url Configure", () => {
         window.location = new URL("http://example.com/test-path");
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -176,7 +176,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -194,7 +194,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path/menu"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path/menu" element={<TestComponent />} />
                     </Routes>
@@ -219,7 +219,7 @@ describe("FullStoryProvider: Url Configure", () => {
         // Render the provider
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                         <Route path="/new-path" element={<TestComponent />} />
@@ -243,7 +243,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -271,7 +271,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -289,7 +289,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?name=John%20Doe&property-2=property"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -317,7 +317,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?user-property-1=property"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -333,7 +333,7 @@ describe("FullStoryProvider: Url Configure", () => {
     it("setProperties sets with no search items", () => {
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -357,7 +357,7 @@ describe("FullStoryProvider: Url Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?property-1=1&property-2=property"]}>
-                <FullStoryProvider capture={["url"]}>
+                <FullStoryProvider defaultCaptureRules={["url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -418,7 +418,7 @@ describe("FullStoryProvider: Schema Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["schema"]}>
+                <FullStoryProvider defaultCaptureRules={["schema"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -438,7 +438,7 @@ describe("FullStoryProvider: Schema Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["schema"]}>
+                <FullStoryProvider defaultCaptureRules={["schema"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -489,7 +489,7 @@ describe("FullStoryProvider: Schema Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["schema"]}>
+                <FullStoryProvider defaultCaptureRules={["schema"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -543,7 +543,7 @@ describe("FullStoryProvider: Meta Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["meta"]}>
+                <FullStoryProvider defaultCaptureRules={["meta"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -562,7 +562,7 @@ describe("FullStoryProvider: Meta Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["meta"]}>
+                <FullStoryProvider defaultCaptureRules={["meta"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -870,7 +870,7 @@ describe("FullStoryProvider: None Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["none"]}>
+                <FullStoryProvider defaultCaptureRules={["none"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -889,7 +889,7 @@ describe("FullStoryProvider: None Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path/product/1234"]}>
-                <FullStoryProvider capture={["none"]}>
+                <FullStoryProvider defaultCaptureRules={["none"]}>
                     <Routes>
                         <Route path="/test-path/product/:id" element={<TestComponent />} />
                     </Routes>
@@ -910,7 +910,7 @@ describe("FullStoryProvider: None Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/documents"]}>
-                <FullStoryProvider rules={{ "documents": ["none"] }}>
+                <FullStoryProvider pageCaptureRules={{ "documents": ["none"] }}>
                     <Routes>
                         <Route path="/documents" element={<TestComponent />} />
                     </Routes>
@@ -929,7 +929,7 @@ describe("FullStoryProvider: None Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/documents"]}>
-                <FullStoryProvider rules={{ "documents": ["none"] }}>
+                <FullStoryProvider pageCaptureRules={{ "documents": ["none"] }}>
                     <Routes>
                         <Route path="/documents" element={<TestComponent />} />
                     </Routes>
@@ -967,7 +967,7 @@ describe("FullStoryProvider: None Configure", () => {
         // setup
         render(
             <MemoryRouter initialIndex={0} initialEntries={["/"]}>
-                <FullStoryProvider rules={{ documents: ["none"] }}>
+                <FullStoryProvider pageCaptureRules={{ documents: ["none"] }}>
                     <Routes>
                         <Route path="/" element={<TestComponent />} />
                         <Route path="/documents" element={<NewComponent />} />
@@ -1023,7 +1023,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["schema", "url"]}>
+                <FullStoryProvider defaultCaptureRules={["schema", "url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -1043,7 +1043,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
-                <FullStoryProvider capture={["schema", "url"]}>
+                <FullStoryProvider defaultCaptureRules={["schema", "url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -1081,7 +1081,7 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?person_name=rich&property_2=2"]}>
-                <FullStoryProvider capture={["schema", "url"]}>
+                <FullStoryProvider defaultCaptureRules={["schema", "url"]}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -1149,7 +1149,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path"]}>
-                <FullStoryProvider capture={["schema", "url"]} rules={{ "test-path": ["url"] }}>
+                <FullStoryProvider defaultCaptureRules={["schema", "url"]} pageCaptureRules={{ "test-path": ["url"] }}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -1169,7 +1169,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?property_1=one&property_2=2"]}>
-                <FullStoryProvider capture={["schema", "meta"]} rules={{ "test-path": ["url"] }}>
+                <FullStoryProvider defaultCaptureRules={["schema", "meta"]} pageCaptureRules={{ "test-path": ["url"] }}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>
@@ -1195,7 +1195,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/documents?user_id=90867"]}>
-                <FullStoryProvider rules={{ "documents": ["url"] }}>
+                <FullStoryProvider pageCaptureRules={{ "documents": ["url"] }}>
                     <Routes>
                         <Route path="/documents" element={<TestComponent />} />
                     </Routes>
@@ -1221,7 +1221,7 @@ describe("FullStoryProvider: Path Rule Configure", () => {
 
         render(
             <MemoryRouter initialEntries={["/test-path?person_name=rich&property_2=2"]}>
-                <FullStoryProvider rules={{ "test-path": ["schema", "url"] }}>
+                <FullStoryProvider pageCaptureRules={{ "test-path": ["schema", "url"] }}>
                     <Routes>
                         <Route path="/test-path" element={<TestComponent />} />
                     </Routes>

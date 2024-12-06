@@ -1,11 +1,11 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@6.3
+    node: circleci/node@6.3
 
 workflows:
-  commit:
-    jobs:
-      - node/test:
-          version: '20.18.1'
-          test-results-for: jest
+    commit:
+        jobs:
+            - node/test:
+                  version: "20.18.1"
+                  test-results-for: jest
