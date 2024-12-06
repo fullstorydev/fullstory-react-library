@@ -25,7 +25,7 @@ jobs:
           command: npm audit --audit-level=low
       - run:
           name: Test
-          command: npm test
+          command: npm run test
       - run:
           name: Build
           command: npm run build
