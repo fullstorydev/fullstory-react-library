@@ -1,6 +1,6 @@
 {
-    "name": "fullstory-react-library",
-    "version": "1.0.0",
+    "name": "@fullstory/react-library",
+    "version": "0.1.0",
     "description": "This component library assists in fullstory set up for react apps",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
@@ -8,12 +8,10 @@
         "clean": "rm -rf dist types",
         "build": "npm run clean && tsc && rollup -c",
         "test": "jest",
-        "pub": "npm run rollup && npm publish",
-        "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build"
+        "pub": "npm run rollup && npm publish"
     },
-    "author": "Michaela Bateman",
-    "license": "ISC",
+    "author": "Fullstory",
+    "license": "MIT",
     "devDependencies": {
         "@babel/core": "^7.25.2",
         "@babel/preset-env": "^7.25.3",
@@ -24,15 +22,6 @@
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@rollup/plugin-typescript": "^11.1.6",
-        "@storybook/addon-essentials": "^8.2.9",
-        "@storybook/addon-interactions": "^8.2.9",
-        "@storybook/addon-links": "^8.2.9",
-        "@storybook/addon-onboarding": "^8.2.9",
-        "@storybook/addon-webpack5-compiler-swc": "^1.0.5",
-        "@storybook/blocks": "^8.2.9",
-        "@storybook/react": "^8.2.9",
-        "@storybook/react-webpack5": "^8.2.9",
-        "@storybook/test": "^8.2.9",
         "@testing-library/react": "^16.0.0",
         "@types/jest": "^29.5.12",
         "@types/react": "^18.3.4",
@@ -43,7 +32,6 @@
         "jest-junit": "^16.0.0",
         "rollup": "^4.21.0",
         "rollup-plugin-peer-deps-external": "^2.2.4",
-        "rollup-plugin-postcss": "^4.0.2",
         "storybook": "^8.2.9",
         "typescript": "^5.5.4"
     },
