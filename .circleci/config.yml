@@ -32,7 +32,36 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: .
-
+  deploy-package:
+    executor:
+      name: node/default
+      tag: '18.20.0'
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
+      - run:
+          name: Publish package
+          command: |
+            PACKAGE_VERSION=$(cat ./package.json \
+              | grep version \
+              | head -1 \
+              | awk -F: '{ print $2 }' \
+              | sed 's/[",]//g')
+            if [[ $PACKAGE_VERSION == *"beta"* ]];
+            then
+              IS_BETA="true"
+            else
+              IS_BETA="false"
+            fi
+            if [ $IS_BETA == "true" ];
+            then
+              npm publish --access public --tag beta
+            else
+              npm publish --access public
+            fi
 
 
 workflows:
@@ -43,3 +72,20 @@ workflows:
           filters:
             branches:
               ignore: main
+      - hold:
+          type: approval
+          requires:
+            - build-and-test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - deploy-package:
+          requires:
+            - hold
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
