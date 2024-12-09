@@ -66,10 +66,7 @@ jobs:
 workflows:
     build-deploy:
         jobs:
-            - build-and-test:
-                  filters:
-                      branches:
-                          ignore: main
+            - build-and-test
             - hold:
                   type: approval
                   requires:
