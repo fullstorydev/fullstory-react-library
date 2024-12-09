@@ -3,9 +3,6 @@ version: 2.1
 orbs:
     node: circleci/node@7.0.0
 
-executors:
-    working_directory: ~/repo
-
 jobs:
     build-and-test:
         executor:
@@ -41,7 +38,7 @@ jobs:
             tag: "18.20.0"
         steps:
             - attach_workspace:
-                  at: ~/repo
+                  at: .
             - run:
                   name: Authenticate with registry
                   command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
@@ -77,9 +74,9 @@ workflows:
     build-deploy:
         jobs:
             - build-and-test:
-                    filters:
+                  filters:
                       tags:
-                        only: /.*/
+                          only: /.*/
             # - hold:
             #       type: approval
             #       requires:
