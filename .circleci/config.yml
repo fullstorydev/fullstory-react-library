@@ -3,6 +3,9 @@ version: 2.1
 orbs:
     node: circleci/node@7.0.0
 
+executors:
+    working_directory: ~/repo
+
 jobs:
     build-and-test:
         executor:
