@@ -71,23 +71,21 @@ jobs:
                       fi
 
 workflows:
-    build-deploy:
+    release:
+        when:
+            matches: { pattern: '^v.+$', value: << pipeline.git.tag >> }
         jobs:
-            - build-and-test
+            - build-and-test:
+                  filters:
+                      tags:
+                          only: /.*/
             - hold:
                   type: approval
                   requires:
                       - build-and-test
-                  filters:
-                      tags:
-                          only: /^v.*/
-                      branches:
-                          ignore: /.*/
             - deploy-package:
                   requires:
                       - hold
-                  filters:
-                      tags:
-                          only: /^v.*/
-                      branches:
-                          ignore: /.*/
+    build-deploy:
+        jobs:
+            - build-and-test
