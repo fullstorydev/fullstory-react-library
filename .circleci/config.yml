@@ -73,7 +73,10 @@ jobs:
 workflows:
     build-deploy:
         jobs:
-            - build-and-test
+            - build-and-test:
+                    filters:
+                      tags:
+                        only: /.*/
             - hold:
                   type: approval
                   requires:
