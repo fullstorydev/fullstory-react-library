@@ -80,18 +80,18 @@ workflows:
                     filters:
                       tags:
                         only: /.*/
-            - hold:
-                  type: approval
-                  requires:
-                      - build-and-test
-                  filters:
-                      tags:
-                          only: /^v.*/
-                      branches:
-                          ignore: /.*/
+            # - hold:
+            #       type: approval
+            #       requires:
+            #           - build-and-test
+            #       filters:
+            #           tags:
+            #               only: /^v.*/
+            #           branches:
+            #               ignore: /.*/
             - deploy-package:
                   requires:
-                      - hold
+                      - build-and-test
                   filters:
                       tags:
                           only: /^v.*/
