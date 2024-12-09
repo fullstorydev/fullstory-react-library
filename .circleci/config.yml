@@ -40,6 +40,9 @@ jobs:
             - attach_workspace:
                   at: .
             - run:
+                  name: List attached workspace contents
+                  command: ls -al
+            - run:
                   name: Authenticate with registry
                   command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
             - run:
