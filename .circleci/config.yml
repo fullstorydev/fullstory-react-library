@@ -45,6 +45,9 @@ jobs:
                       echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
                       echo "@fullstorydev:registry=https://npm.pkg.github.com/" >> .npmrc
             - run:
+                  name: List all files
+                  command: ls -al
+            - run:
                   name: Publish package
                   command: |
                       PACKAGE_VERSION=$(cat ./package.json \
