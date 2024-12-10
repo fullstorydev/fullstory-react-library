@@ -1,6 +1,6 @@
 {
     "name": "@fullstory/react-library",
-    "version": "0.1.11-alpha",
+    "version": "0.1.12-alpha",
     "description": "This component library assists in fullstory set up for react apps",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
@@ -45,7 +45,7 @@
     "types": "dist/index.d.ts",
     "type": "module",
     "publishConfig": {
-        "registry": "https://npm.pkg.github.com/bateman001"
+        "registry": "https://npm.pkg.github.com/fullstorydev"
     },
     "dependencies": {
         "@fullstory/browser": "^2.0.5"
