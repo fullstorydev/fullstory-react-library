@@ -41,7 +41,9 @@ jobs:
                   at: .
             - run:
                   name: Authenticate with registry
-                  command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
+                  command: |
+                      echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
+                      echo "@fullstorydev:registry=https://npm.pkg.github.com/" >> .npmrc
             - run:
                   name: Publish package
                   command: |
@@ -63,7 +65,7 @@ jobs:
                         if [ $IS_BETA == "true" ]; then
                           npm publish --access public --tag beta
                         elif [ $IS_ALPHA == "true" ]; then
-                          npm publish --access public --tag alpha
+                          npm publish --tag alpha
                         else
                           npm publish --access public
                         fi
