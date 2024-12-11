@@ -67,7 +67,7 @@ jobs:
                         if [ $IS_BETA == "true" ]; then
                           npm publish --access public --tag beta
                         elif [ $IS_ALPHA == "true" ]; then
-                          npm publish --tag alpha
+                          npm publish --access public --tag alpha
                         else
                           npm publish --access public
                         fi
