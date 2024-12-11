@@ -43,7 +43,7 @@ jobs:
                   name: Authenticate with registry
                   command: |
                       echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
-                      echo "@fullstorydev:registry=https://npm.pkg.github.com/" >> .npmrc
+                      echo "@fullstory:registry=https://npm.pkg.github.com/" >> .npmrc
             - run:
                   name: List all files
                   command: ls -al
