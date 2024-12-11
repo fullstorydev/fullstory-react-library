@@ -43,7 +43,7 @@ import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider capture={["url"]}>
+    <FullStoryProvider defaultCapture={["url"]}>
       <Routes>
         {...}
       </Routes>
@@ -65,7 +65,7 @@ import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider capture={["meta"]}>
+    <FullStoryProvider defaultCapture={["meta"]}>
       <Routes>
         {...}
       </Routes>
@@ -88,7 +88,7 @@ import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider capture={["schema"]}>
+    <FullStoryProvider defaultCapture={["schema"]}>
       <Routes>
         {...}
       </Routes>
@@ -111,7 +111,7 @@ import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider capture={["url", "schema"]}>
+    <FullStoryProvider defaultCapture={["url", "schema"]}>
       <Routes>
         {...}
       </Routes>
@@ -134,7 +134,7 @@ import { FullStoryProvider } from "@fullstory/fullstory-react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider capture={["url"]} rules={{"dashboard": ["schema", "meta"]}}>
+    <FullStoryProvider defaultCapture={["url"]} pageCaptureRules={{"dashboard": ["schema", "meta"]}}>
       <Routes>
         <Route path="/" element={<HomePage />}/>
         <Route path="/dashboard" element={<Dashboard />}/>
