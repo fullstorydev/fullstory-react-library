@@ -107,7 +107,7 @@ Multi Capture Configuration will defualt capture information from certain aspect
 Add the capture rules you would like to your `FullStoryProvider`.
 
 ```
-import { FullStoryProvider } from "@fullstory/fullstory-react-library";
+import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
   return (
