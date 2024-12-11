@@ -1,6 +1,6 @@
 {
     "name": "@fullstory/react-library",
-    "version": "0.1.16-alpha",
+    "version": "0.1.17-alpha",
     "description": "This component library assists in fullstory set up for react apps",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
