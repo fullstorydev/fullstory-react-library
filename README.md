@@ -54,7 +54,7 @@ const App = () => {
 
 ### 3. Meta Configuration
 
-The meta configuration will capture all of the information in the meta tags. It will set configure the pageName from the title tag in the head.
+The meta configuration will capture all of the information in the meta tags. It will configure the pageName from the title tag in the head.
 
 **Implementation:**
 
@@ -77,7 +77,7 @@ const App = () => {
 
 ### 4. Schema Configuration
 
-The schema configuration will capture all of the information in the schemas on the page. It will set configure the pageName from the url path.
+The schema configuration will capture all of the information in the schemas on the page. It will configure the pageName from the url path.
 
 **Implementation:**
 
@@ -100,7 +100,7 @@ const App = () => {
 
 ### 5. Multi Capture Configuration
 
-Multi Capture Configuration will defualt capture information from certain aspects of the page.
+Multi Capture Configuration will by defualt capture information from certain aspects of the page.
 
 **Implementation:**
 
@@ -123,7 +123,7 @@ const App = () => {
 
 ### 6. Singular Page Capture Rules
 
-Additionally we can overried the default capture rules by add capture rules to certain pages.
+Additionally, we can overried the default capture rules by adding capture rules to specific pages.
 
 **Implementation:**
 
@@ -147,7 +147,7 @@ const App = () => {
 
 ### 7. useFSNavigate Configuration
 
-If you would like FullStory to capture custom pagenames and properties we can use the hook `useFSNavigate()`. The page name will the set to your custom pagename and the custom properties will be added to the properties captured by the default configuration or page configuration rules.
+If you would like FullStory to capture custom pagenames and properties we can use the hook `useFSNavigate()`. The page name will be set to your custom pagename and the custom properties will be added to the properties captured by the default configuration or page configuration rules.
 
 **Implementation:**
 
