@@ -131,6 +131,7 @@ dist
 
 /dist
 /node_modules
+/types
 
 .DS_Store
 

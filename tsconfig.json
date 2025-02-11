@@ -7,12 +7,17 @@
         "skipLibCheck": true,
         "jsx": "react",
         "module": "ESNext",
-        "declaration": true,
-        "declarationDir": "types",
+        "declaration": true, // Enable generation of declaration (.d.ts) files
+        "declarationMap": true,
+        "declarationDir": "dist",
         "sourceMap": false,
         "outDir": "dist",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "emitDeclarationOnly": true
-    }
+    },
+    "include": [
+        "src/**/*" // Your source files
+    ],
+    "exclude": ["node_modules"]
 }

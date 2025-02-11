@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="42" failures="0" errors="0" time="2.69">
+  <testsuite name="FullStoryProvider: useFSNavigate" errors="0" failures="0" skipped="0" timestamp="2024-12-06T17:49:15" time="1.929" tests="42">
+    <testcase classname="FullStoryProvider: useFSNavigate can navigate using useFSNavigate within a BrowserRouter" name="FullStoryProvider: useFSNavigate can navigate using useFSNavigate within a BrowserRouter" time="0.037">
+    </testcase>
+    <testcase classname="FullStoryProvider: useFSNavigate returns correct properties when rule is attached" name="FullStoryProvider: useFSNavigate returns correct properties when rule is attached" time="0.067">
+    </testcase>
+    <testcase classname="FullStoryProvider: useFSNavigate returns correct properties after ref is changed to true in useFSNavigate" name="FullStoryProvider: useFSNavigate returns correct properties after ref is changed to true in useFSNavigate" time="0.015">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure renders with FSProvider" name="FullStoryProvider: Url Configure renders with FSProvider" time="0.006">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure getPageName returns correct path name" name="FullStoryProvider: Url Configure getPageName returns correct path name" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure getPageName returns correct path name for multi path" name="FullStoryProvider: Url Configure getPageName returns correct path name for multi path" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure handles navigation events" name="FullStoryProvider: Url Configure handles navigation events" time="0.005">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure getPageProperties returns properties from search" name="FullStoryProvider: Url Configure getPageProperties returns properties from search" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure getPageProperties returns object when search is empty" name="FullStoryProvider: Url Configure getPageProperties returns object when search is empty" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure getPageProperties gets property with space delimeter" name="FullStoryProvider: Url Configure getPageProperties gets property with space delimeter" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure getPageProperties gets property with multiple - " name="FullStoryProvider: Url Configure getPageProperties gets property with multiple - " time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure setProperties sets with no search items" name="FullStoryProvider: Url Configure setProperties sets with no search items" time="0.003">
+    </testcase>
+    <testcase classname="FullStoryProvider: Url Configure setProperties sets with search items" name="FullStoryProvider: Url Configure setProperties sets with search items" time="0.003">
+    </testcase>
+    <testcase classname="FullStoryProvider: Schema Configure returns correct page name" name="FullStoryProvider: Schema Configure returns correct page name" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Schema Configure returns correct properties" name="FullStoryProvider: Schema Configure returns correct properties" time="0.003">
+    </testcase>
+    <testcase classname="FullStoryProvider: Schema Configure returns correct propertis when schema contains string[]" name="FullStoryProvider: Schema Configure returns correct propertis when schema contains string[]" time="0.005">
+    </testcase>
+    <testcase classname="FullStoryProvider: Meta Configure returns correct page name" name="FullStoryProvider: Meta Configure returns correct page name" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Meta Configure returns correct properties" name="FullStoryProvider: Meta Configure returns correct properties" time="0.003">
+    </testcase>
+    <testcase classname="FullStoryProvider: Meta Configure returns correct properties when config is all" name="FullStoryProvider: Meta Configure returns correct properties when config is all" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Auto Configure returns correct page name" name="FullStoryProvider: Auto Configure returns correct page name" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Auto Configure returns correct pagname when path has an id" name="FullStoryProvider: Auto Configure returns correct pagname when path has an id" time="0.005">
+    </testcase>
+    <testcase classname="FullStoryProvider: Auto Configure returns correct page name when path is /" name="FullStoryProvider: Auto Configure returns correct page name when path is /" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Auto Configure returns correct properties" name="FullStoryProvider: Auto Configure returns correct properties" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Auto Configure returns correct properties when some values match" name="FullStoryProvider: Auto Configure returns correct properties when some values match" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: Auto Configure returns correct properties from Wells Cargo" name="FullStoryProvider: Auto Configure returns correct properties from Wells Cargo" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: None Configure returns no page name" name="FullStoryProvider: None Configure returns no page name" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: None Configure returns no properties" name="FullStoryProvider: None Configure returns no properties" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: None Configure returns no pageName on specific page" name="FullStoryProvider: None Configure returns no pageName on specific page" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: None Configure returns no properties on specific page" name="FullStoryProvider: None Configure returns no properties on specific page" time="0.003">
+    </testcase>
+    <testcase classname="FullStoryProvider: None Configure returns no properties on FSUseNavigate" name="FullStoryProvider: None Configure returns no properties on FSUseNavigate" time="0.01">
+    </testcase>
+    <testcase classname="FullStoryProvider: Multi Default Rule Configure returns correct page name" name="FullStoryProvider: Multi Default Rule Configure returns correct page name" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: Multi Default Rule Configure returns correct properties" name="FullStoryProvider: Multi Default Rule Configure returns correct properties" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: Multi Default Rule Configure returns correct properties when some values match" name="FullStoryProvider: Multi Default Rule Configure returns correct properties when some values match" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: Path Rule Configure returns correct page name" name="FullStoryProvider: Path Rule Configure returns correct page name" time="0.004">
+    </testcase>
+    <testcase classname="FullStoryProvider: Path Rule Configure returns correct properties when default is defined" name="FullStoryProvider: Path Rule Configure returns correct properties when default is defined" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: Path Rule Configure returns correct properties when default is all" name="FullStoryProvider: Path Rule Configure returns correct properties when default is all" time="0.002">
+    </testcase>
+    <testcase classname="FullStoryProvider: Path Rule Configure returns correct properties when some values match" name="FullStoryProvider: Path Rule Configure returns correct properties when some values match" time="0.003">
+    </testcase>
+    <testcase classname="Helper Functions flattenSchema can return a flattened schema object" name="Helper Functions flattenSchema can return a flattened schema object" time="0.001">
+    </testcase>
+    <testcase classname="Helper Functions can remove all special character from key name" name="Helper Functions can remove all special character from key name" time="0">
+    </testcase>
+    <testcase classname="Helper Functions flattenSchema can return a flattend schema array" name="Helper Functions flattenSchema can return a flattend schema array" time="0.001">
+    </testcase>
+    <testcase classname="Helper Functions flatten schema can handle when type isn&apos;t explicit" name="Helper Functions flatten schema can handle when type isn&apos;t explicit" time="0.001">
+    </testcase>
+    <testcase classname="Helper Functions flatten schema with array for the type" name="Helper Functions flatten schema with array for the type" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>

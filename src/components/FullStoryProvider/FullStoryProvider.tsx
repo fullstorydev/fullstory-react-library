@@ -18,7 +18,11 @@ export const useFSNavigate = () => {
     return context.useFSNavigate;
 };
 
-export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, capture = ["all"], rules = {} }) => {
+export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({
+    children,
+    defaultCaptureRules = ["all"],
+    pageCaptureRules = {}
+}) => {
     // VARIABLES
     const navigationTriggeredRef = useRef<boolean>(false);
     const pageNameRef = useRef<string>("");
@@ -34,10 +38,16 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({ children, 
         const { pathname, search } = location;
 
         // Find PageName
-        const name = getPageName(pathname, capture, rules, pageNameRef.current);
+        const name = getPageName(pathname, defaultCaptureRules, pageCaptureRules, pageNameRef.current);
 
         // Find the default properties according to capture rules
-        const properties = getPageProperties(pathname, search, capture, rules, propertiesRef.current);
+        const properties = getPageProperties(
+            pathname,
+            search,
+            defaultCaptureRules,
+            pageCaptureRules,
+            propertiesRef.current
+        );
 
         // if pageName does not exist on properties or name is not empty add pageName
         if (!properties.pageName && name !== "") {

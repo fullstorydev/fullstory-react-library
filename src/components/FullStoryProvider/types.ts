@@ -9,8 +9,8 @@ export interface CaptureRules {
 // Prop types for FullStoryProvider
 export interface FullStoryProviderProps {
     children: ReactNode;
-    capture?: CaptureOptions;
-    rules?: CaptureRules;
+    defaultCaptureRules?: CaptureOptions;
+    pageCaptureRules?: CaptureRules;
 }
 
 export interface SchemaType {
