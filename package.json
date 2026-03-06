@@ -40,7 +40,7 @@
     ],
     "sideEffects": false,
     "engines": {
-        "node": ">=18"
+        "node": ">=20"
     },
     "devDependencies": {
         "@testing-library/react": "^16.0.0",
