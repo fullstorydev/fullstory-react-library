@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { MemoryRouter } from "react-router"; // MemoryRouter is useful for testing
@@ -8,8 +7,8 @@ import * as Helpers from "../../utils/helpers";
 import { FullStory, init } from "@fullstory/browser";
 import { Schema } from "./types";
 
-jest.mock("@fullstory/browser", () => ({
-    FullStory: jest.fn((apiName, options) => {
+vi.mock("@fullstory/browser", () => ({
+    FullStory: vi.fn((apiName, options) => {
         // Here you can add a condition to handle different FullStory API names if necessary
         if (apiName === "setProperties") {
             return;
@@ -17,14 +16,14 @@ jest.mock("@fullstory/browser", () => ({
             // For now, we'll just check that it's been called correctly.
         }
     }),
-    init: jest.fn(org_id => {
+    init: vi.fn(org_id => {
         console.log("org_id", org_id);
     })
 }));
 
 describe("FullStoryProvider: useFSNavigate", () => {
-    const setPageSpy = jest.spyOn(FS, "setPage");
-    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
+    const setPageSpy = vi.spyOn(FS, "setPage");
+    const getPageProperties = vi.spyOn(Helpers, "getPageProperties");
 
     beforeEach(() => {
         document.head.innerHTML = `
@@ -83,7 +82,7 @@ describe("FullStoryProvider: useFSNavigate", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("can navigate using useFSNavigate within a BrowserRouter", () => {
@@ -138,9 +137,9 @@ describe("FullStoryProvider: useFSNavigate", () => {
 describe("FullStoryProvider: Url Configure", () => {
     // Define a simple test component for the route
     const TestComponent = () => <div>Test Component</div>;
-    const getNameSpy = jest.spyOn(Helpers, "getPageName");
-    const getPagePropertiesSpy = jest.spyOn(Helpers, "getPageProperties");
-    const setPageSpy = jest.spyOn(FS, "setPage");
+    const getNameSpy = vi.spyOn(Helpers, "getPageName");
+    const getPagePropertiesSpy = vi.spyOn(Helpers, "getPageProperties");
+    const setPageSpy = vi.spyOn(FS, "setPage");
 
     beforeAll(() => {
         init({ orgId: "123" });
@@ -149,7 +148,7 @@ describe("FullStoryProvider: Url Configure", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("renders with FSProvider", () => {
@@ -213,8 +212,8 @@ describe("FullStoryProvider: Url Configure", () => {
         window.location = new URL("http://example.com/test-path/menu");
 
         // Mock and spy on the global window object
-        jest.spyOn(window, "addEventListener");
-        jest.spyOn(window, "removeEventListener");
+        vi.spyOn(window, "addEventListener");
+        vi.spyOn(window, "removeEventListener");
 
         // Render the provider
         render(
@@ -405,12 +404,12 @@ describe("FullStoryProvider: Schema Configure", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
-    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+    const getPageProperties = vi.spyOn(Helpers, "getPageProperties");
+    const getPageNameSpy = vi.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
         //@ts-ignore
@@ -530,12 +529,12 @@ describe("FullStoryProvider: Meta Configure", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getPagePropertiesSpy = jest.spyOn(Helpers, "getPageProperties");
-    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+    const getPagePropertiesSpy = vi.spyOn(Helpers, "getPageProperties");
+    const getPageNameSpy = vi.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
         //@ts-ignore
@@ -646,12 +645,12 @@ describe("FullStoryProvider: Auto Configure", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
-    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+    const getPageProperties = vi.spyOn(Helpers, "getPageProperties");
+    const getPageNameSpy = vi.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
         //@ts-ignore
@@ -856,13 +855,13 @@ describe("FullStoryProvider: None Configure", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
-    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
-    const setPageSpy = jest.spyOn(FS, "setPage");
+    const getPageProperties = vi.spyOn(Helpers, "getPageProperties");
+    const getPageNameSpy = vi.spyOn(Helpers, "getPageName");
+    const setPageSpy = vi.spyOn(FS, "setPage");
 
     it("returns no page name", () => {
         //@ts-ignore
@@ -1010,12 +1009,12 @@ describe("FullStoryProvider: Multi Default Rule Configure", () => {
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
-    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+    const getPageProperties = vi.spyOn(Helpers, "getPageProperties");
+    const getPageNameSpy = vi.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
         //@ts-ignore
@@ -1140,8 +1139,8 @@ describe("FullStoryProvider: Path Rule Configure", () => {
     });
 
     const TestComponent = () => <div>Test Component</div>;
-    const getPageProperties = jest.spyOn(Helpers, "getPageProperties");
-    const getPageNameSpy = jest.spyOn(Helpers, "getPageName");
+    const getPageProperties = vi.spyOn(Helpers, "getPageProperties");
+    const getPageNameSpy = vi.spyOn(Helpers, "getPageName");
 
     it("returns correct page name", () => {
         //@ts-ignore
