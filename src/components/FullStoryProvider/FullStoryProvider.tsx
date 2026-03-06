@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
 import { getPageName, getPageProperties } from "../../utils/helpers";
