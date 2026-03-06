@@ -6,4 +6,4 @@ interface FullStoryContextData {
 }
 
 // Create the context with initial values
-export const FullStoryContext = createContext<FullStoryContextData>({} as FullStoryContextData);
+export const FullStoryContext = createContext<FullStoryContextData | null>(null);

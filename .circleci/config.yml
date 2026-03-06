@@ -7,7 +7,7 @@ jobs:
     build-and-test:
         executor:
             name: node/default
-            tag: "18.20.0"
+            tag: "20.20.1"
         steps:
             - checkout
             - restore_cache:

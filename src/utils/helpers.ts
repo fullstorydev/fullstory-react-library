@@ -28,7 +28,7 @@ function getMetaProperties(): any {
             const content = metaTags[i].getAttribute(keys[contentIndex]) as string;
 
             // insert the key and valuee into the property store
-            props[key.replace("-", "_")] = content;
+            props[key.replaceAll("-", "_")] = content;
         }
     }
 
@@ -98,8 +98,7 @@ export function flattenSchema(
 
 function escapeNewlinesInJsonLikeString(jsonLikeString: string) {
     // Matches content between quotes, accounting for escaped quotes inside the string.
-    // @ts-ignore
-    return jsonLikeString.replace(/"(.*?)"/gs, (match, group1) => {
+    return jsonLikeString.replace(/"(.*?)"/gs, (match: string, group1: string) => {
         // Escape newlines inside of the string values
         const escapedValue = group1.replace(/\n/g, " ").replace(/\r/g, " ");
         return `"${escapedValue}"`;

@@ -3,12 +3,12 @@ import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
 import { getPageName, getPageProperties } from "../../utils/helpers";
 import { FullStoryProviderProps } from "./types";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 export const useFSNavigate = () => {
     const context = useContext(FullStoryContext);
 
-    if (context === undefined) {
+    if (!context) {
         throw new Error("useFSNavigate must be used within a FullStoryProvider");
     }
 
@@ -95,7 +95,7 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({
     // USE EFFECTS
     useEffect(() => {
         handleLocationChange();
-    }, [location, handleLocationChange]);
+    }, [location]);
 
     return <FullStoryContext.Provider value={{ useFSNavigate }}>{children}</FullStoryContext.Provider>;
 };
