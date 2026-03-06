@@ -95,7 +95,7 @@ export const FullStoryProvider: React.FC<FullStoryProviderProps> = ({
     // USE EFFECTS
     useEffect(() => {
         handleLocationChange();
-    }, [location, handleLocationChange]);
+    }, [location]);
 
     return <FullStoryContext.Provider value={{ useFSNavigate }}>{children}</FullStoryContext.Provider>;
 };
