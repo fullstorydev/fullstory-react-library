@@ -1,23 +1,14 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
+        "target": "es2018",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
         "strict": true,
         "skipLibCheck": true,
-        "jsx": "react",
-        "module": "ESNext",
-        "declaration": true, // Enable generation of declaration (.d.ts) files
-        "declarationMap": true,
-        "declarationDir": "dist",
-        "sourceMap": false,
-        "outDir": "dist",
-        "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
-        "emitDeclarationOnly": true
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true
     },
-    "include": [
-        "src/**/*" // Your source files
-    ],
-    "exclude": ["node_modules"]
+    "include": ["src/**/*"]
 }
