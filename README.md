@@ -4,7 +4,17 @@ This is a component library that encourages developers to build with components 
 
 ## Installation
 
-Run `npm install @fullstory/react-library`
+```bash
+npm install @fullstory/react-library
+```
+
+### Peer Dependencies
+
+This library requires the following peer dependencies:
+
+- `react` v18 or v19
+- `react-router` v6+
+- `@fullstory/browser` v2+
 
 ## Migration Guide
 
@@ -22,15 +32,15 @@ Run `npm install @fullstory/react-library`
 
 ## Page Names and Properties
 
-### 1. Defualt Configuration
+### 1. Default Configuration
 
-The defualt configuration will capture all of the information in the url, meta tags, and schemas. The page name by default comes from the url path.
+The default configuration will capture all of the information in the url, meta tags, and schemas. The page name by default comes from the url path.
 
 **Implementation:**
 
 Wrap your Routes with `<FullStoryProvider>` like so
 
-```
+```jsx
 import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
@@ -52,12 +62,12 @@ The url configuration will set page names and properties according to the url. I
 
 Add the capture rule of `url` to your `FullStoryProvider`.
 
-```
+```jsx
 import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider defaultCapture={["url"]}>
+    <FullStoryProvider defaultCaptureRules={["url"]}>
       <Routes>
         {...}
       </Routes>
@@ -74,12 +84,12 @@ The meta configuration will capture all of the information in the meta tags. It 
 
 Add the capture rule of `meta` to your `FullStoryProvider`.
 
-```
+```jsx
 import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider defaultCapture={["meta"]}>
+    <FullStoryProvider defaultCaptureRules={["meta"]}>
       <Routes>
         {...}
       </Routes>
@@ -97,12 +107,12 @@ The schema configuration will capture all of the information in the schemas on t
 
 Add the capture rule of `schema` to your `FullStoryProvider`.
 
-```
+```jsx
 import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider defaultCapture={["schema"]}>
+    <FullStoryProvider defaultCaptureRules={["schema"]}>
       <Routes>
         {...}
       </Routes>
@@ -114,18 +124,18 @@ const App = () => {
 
 ### 5. Multi Capture Configuration
 
-Multi Capture Configuration will by defualt capture information from certain aspects of the page.
+Multi Capture Configuration will by default capture information from certain aspects of the page.
 
 **Implementation:**
 
 Add the capture rules you would like to your `FullStoryProvider`.
 
-```
+```jsx
 import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider defaultCapture={["url", "schema"]}>
+    <FullStoryProvider defaultCaptureRules={["url", "schema"]}>
       <Routes>
         {...}
       </Routes>
@@ -137,18 +147,18 @@ const App = () => {
 
 ### 6. Singular Page Capture Rules
 
-Additionally, we can overried the default capture rules by adding capture rules to specific pages.
+Additionally, we can override the default capture rules by adding capture rules to specific pages.
 
 **Implementation:**
 
 Add the capture rules by defining the page and the rule you expect to `FullStoryProvider`.
 
-```
+```jsx
 import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
   return (
-    <FullStoryProvider defaultCapture={["url"]} pageCaptureRules={{"dashboard": ["schema", "meta"]}}>
+    <FullStoryProvider defaultCaptureRules={["url"]} pageCaptureRules={{"dashboard": ["schema", "meta"]}}>
       <Routes>
         <Route path="/" element={<HomePage />}/>
         <Route path="/dashboard" element={<Dashboard />}/>
@@ -165,7 +175,7 @@ If you would like FullStory to capture custom pagenames and properties we can us
 
 **Implementation:**
 
-```
+```jsx
 import { FullStoryProvider } from "@fullstory/react-library";
 
 const App = () => {
@@ -181,7 +191,7 @@ const App = () => {
 
 Then we can use the hook anywhere within the provider like this:
 
-```
+```jsx
 import { useFSNavigate } from "@fullstory/react-library";
 
 const Button = (props) => {
