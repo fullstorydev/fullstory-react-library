@@ -28,7 +28,7 @@ function getMetaProperties(): any {
             const content = metaTags[i].getAttribute(keys[contentIndex]) as string;
 
             // insert the key and valuee into the property store
-            props[key.replace("-", "_")] = content;
+            props[key.replaceAll("-", "_")] = content;
         }
     }
 
