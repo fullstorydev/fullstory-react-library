@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
 import { getPageName, getPageProperties } from "../../utils/helpers";
@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from "react-router";
 export const useFSNavigate = () => {
     const context = useContext(FullStoryContext);
 
-    if (context === undefined) {
+    if (!context) {
         throw new Error("useFSNavigate must be used within a FullStoryProvider");
     }
 
