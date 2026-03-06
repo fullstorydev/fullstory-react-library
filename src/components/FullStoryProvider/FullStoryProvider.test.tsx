@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { Routes, Route, useNavigate } from "react-router-dom";
-import { MemoryRouter } from "react-router"; // MemoryRouter is useful for testing
+import { Routes, Route, useNavigate, MemoryRouter } from "react-router";
 import FullStoryProvider, { useFSNavigate } from "./FullStoryProvider";
 import * as FS from "../../utils/fullstory";
 import * as Helpers from "../../utils/helpers";

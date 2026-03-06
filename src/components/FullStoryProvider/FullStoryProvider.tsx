@@ -3,7 +3,7 @@ import { FullStoryContext } from "./FullStoryContext";
 import { setPage } from "../../utils/fullstory";
 import { getPageName, getPageProperties } from "../../utils/helpers";
 import { FullStoryProviderProps } from "./types";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 export const useFSNavigate = () => {
     const context = useContext(FullStoryContext);

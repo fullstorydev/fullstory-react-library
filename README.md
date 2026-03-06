@@ -6,6 +6,20 @@ This is a component library that encourages developers to build with components 
 
 Run `npm install @fullstory/react-library`
 
+## Migration Guide
+
+### v1 → v2: `react-router-dom` → `react-router`
+
+**v2 is a breaking change** for apps on React Router v5 or earlier.
+
+**What changed:** The peer dependency was updated from `react-router-dom` to `react-router` to align with the package structure introduced in React Router v6, where core routing APIs live in `react-router` and `react-router-dom` is a thin DOM-specific wrapper.
+
+**Required minimum version:** React Router v6.
+
+**If you are on React Router v6:** No changes needed beyond upgrading this library. `react-router-dom` re-exports everything from `react-router`, so your existing app imports are unaffected.
+
+**If you are on React Router v5:** Install the [React Router v5→v6 compatibility layer](https://github.com/remix-run/react-router/tree/main/packages/react-router-dom-v5-compat) to migrate incrementally before upgrading to v2 of this library.
+
 ## Page Names and Properties
 
 ### 1. Defualt Configuration
